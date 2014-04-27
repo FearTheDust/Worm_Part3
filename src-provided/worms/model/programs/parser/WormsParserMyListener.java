@@ -88,7 +88,7 @@ public class WormsParserMyListener<E, S, T> implements WormsParserListener {
 			if (statements == null) {
 				statements = StatementOfEval(eval.eval());
 			} else {
-				java.util.List<S> l = new java.util.ArrayList<S>();
+				java.util.List<S> l = new java.util.ArrayList<>();
 				l.add(statements);
 				l.add(StatementOfEval(eval.eval()));
 				statements = factory.createSequence(line, column, l);

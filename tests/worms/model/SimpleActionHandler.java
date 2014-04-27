@@ -1,6 +1,7 @@
 package worms.model;
 
 import worms.gui.game.IActionHandler;
+import worms.model.world.entity.Worm;
 
 /**
  * A simple action handler that just calls the necessary methods on the facade.

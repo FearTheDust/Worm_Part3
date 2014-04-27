@@ -134,7 +134,7 @@ public class Facade implements IFacade {
 
 		if(position!=null) {
 			String[] names = {"Brent", "Vincent" , "Eric", "Jasper", "Thomas H", "Jan Tobias", "Syeda", "Andreas", "Tom", "Gijs", 
-				"Thomas V", "Koen", "Change my name", "Hendrik", "Philip", "Yolande", "Marc",  "André", "Bart",  "Arno", 
+				"Thomas V", "Koen", "Change my name", "Hendrik", "Philip", "Yolande", "Marc",  "Andrï¿½", "Bart",  "Arno", 
 					"FearTheDust", "Brancus", "This deserves at least a 16"};
 			
 			worm = createWorm(world, position.getX(), position.getY(), 0, 0.5, names[world.getRandom().nextInt(names.length)], program);
@@ -341,11 +341,11 @@ public class Facade implements IFacade {
 		world.nextTurn();
 	}
 
+        //TODO Check, correct?
 	@Override
 	public Worm createWorm(World world, double x, double y, double direction,
 			double radius, String name, Program program) {
-		// TODO return new Worm(world, new Position(x,y), direction, radius, name);
-		return null;
+		return new Worm(world, new Position(x,y), direction, radius, name, program);
 	}
 
 	@Override

@@ -63,8 +63,11 @@ import worms.util.*;
  *			| this.getTeam().isMember(this)
  */
 
-public class Worm extends GameObject {
+public class Worm extends GameObject implements Entity {
 
+    
+        //TODO: Add Program in constructor (documentation + work)
+    
 	/**
 	 * Initialize a new worm with a certain position, angle, radius, name,
 	 * 	 a certain amount of action points, a certain amount of hit points and give him a set of weapons.
@@ -98,7 +101,7 @@ public class Worm extends GameObject {
 	 */
 	@Raw
 	public Worm(World world, Position position, double angle, double radius,
-			String name, int actionPoints, int hitPoints) {
+			String name, int actionPoints, int hitPoints, Program program) {
 		super(world, position);
 		this.setAngle(angle);
 		this.setRadius(radius);
@@ -123,16 +126,17 @@ public class Worm extends GameObject {
 	 * @param angle The angle of the new worm.
 	 * @param radius The radius of the new worm.
 	 * @param name The name of the new worm.
+         * @param program The program of the new worm.
 	 * 
 	 * @effect	A new worm will be initialized with a position, angle, radius, name, the maximum amount of action points possible for the new worm 
-	 * 				and the maximum amount of hit points possible for the new worm.
-	 * 			| this(world, position, angle, radius, name, Integer.MAX_VALUE, Integer.MAX_VALUE)
+	 * 				and the maximum amount of hit points possible for the new worm. As well as the program for the new worm.
+	 * 			| this(world, position, angle, radius, name, Integer.MAX_VALUE, Integer.MAX_VALUE, program)
 	 */
 	@Raw
 	public Worm(World world, Position position, double angle, double radius,
-			String name) {
+			String name, Program program) {
 		this(world, position, angle, radius, name, Integer.MAX_VALUE,
-				Integer.MAX_VALUE);
+				Integer.MAX_VALUE, program);
 	}
 
 	/**
@@ -342,7 +346,7 @@ public class Worm extends GameObject {
 	/**
 	 * Returns the radius of this worm.
 	 */
-	@Basic @Raw
+	@Basic @Raw @Override
 	public double getRadius() {
 		return radius;
 	}
@@ -624,6 +628,7 @@ public class Worm extends GameObject {
 	 * 			| if(this.getWorld() == null)
 	 * 			|	result == false
 	 */
+        @Override
 	public boolean isAlive() {
 		if (this.getWorld() == null)
 			return false;
@@ -1009,5 +1014,41 @@ public class Worm extends GameObject {
 			this.getWorld().getLivingProjectile().jump(GUIConstants.JUMP_TIME_STEP);
 		}
 	}
+
+    /**
+     * 
+     * @return this.getCurrentHitPoints()
+     */    
+    @Override @Basic
+    public double getHP() {
+        return this.getCurrentHitPoints();
+    }
+
+    /**
+     * 
+     * @return this.getMaximumHitPoints()
+     */
+    @Override
+    public double getMaxHP() {
+        return this.getMaximumHitPoints();
+    }
+
+    /**
+     * 
+     * @return this.getCurrentActionPoints()
+     */
+    @Override @Basic
+    public double getAP() {
+        return this.getCurrentActionPoints();
+    }
+
+    /**
+     * 
+     * @return this.getMaximumActionPoints()
+     */
+    @Override
+    public double getMaxAP() {
+        return this.getMaximumActionPoints();
+    }
 	
 }
