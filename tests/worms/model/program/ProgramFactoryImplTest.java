@@ -4,6 +4,8 @@ package worms.model.program;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import worms.model.Facade;
+import worms.model.SimpleActionHandler;
 import worms.model.programs.ProgramParser;
 
 /**
@@ -17,7 +19,9 @@ public class ProgramFactoryImplTest {
     
     @BeforeClass
     public static void setUpClass() {
-       factory = new ProgramFactoryImpl();
+       Facade facade = new Facade(); 
+       SimpleActionHandler handler = new SimpleActionHandler(facade);
+       factory = new ProgramFactoryImpl(handler);
        ProgramParser parser = new ProgramParser(factory);
        factory.setProgramParser(parser);
     }

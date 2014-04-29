@@ -1,5 +1,7 @@
 
-package worms.model.program;
+package worms.model.program.statements;
+
+import worms.model.program.Expression;
 
 /**
  * Statement that prints out an expression.

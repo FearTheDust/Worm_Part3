@@ -1,8 +1,10 @@
 package worms.model.program;
 
 import java.util.List;
+import worms.gui.game.IActionHandler;
 import worms.model.Entity;
 import worms.model.program.exceptions.IllegalTypeException;
+import worms.model.program.statements.*;
 import worms.model.programs.ProgramFactory;
 import worms.model.programs.ProgramParser;
 import worms.model.world.entity.Food;
@@ -23,11 +25,26 @@ import worms.util.Util;
  */
 public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement, Variable> {
     
+    /**
+     * The programFactory to help construct the Program.
+     * @param handler The handler to execute the statements with.
+     */
+    public ProgramFactoryImpl(IActionHandler handler) {
+        this.handler = handler;
+    }
+    
+    private IActionHandler handler;
+    
     //TODO: Finish up + doc + null pointer
+    /**
+     * Set the program parser for this ProgramFactoryImpl.
+     * @param parser 
+     */
     public void setProgramParser(ProgramParser parser) {
         this.parser = parser;
     }
 
+    //TODO (vraag) We need a way to get the list of all globals (assignmentStatement), should/is it best to user ProgramParser for this or is there anyother way?
     ProgramParser parser;
     
     @Override
@@ -463,12 +480,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public Statement createSequence(int line, int column, List<Statement> statements) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new SequencedStatement(statements);
     }
 
     @Override
     public Statement createPrint(int line, int column, Expression e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new PrintStatement(e);
     }
 
     @Override

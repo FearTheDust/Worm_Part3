@@ -2,11 +2,17 @@ package worms.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Random;
-
 import worms.gui.game.IActionHandler;
 import worms.model.equipment.weapons.Weapon;
+import worms.model.program.Expression;
+import worms.model.program.ProgramFactoryImpl;
+import worms.model.program.Variable;
+import worms.model.program.statements.Statement;
 import worms.model.programs.ParseOutcome;
+import worms.model.programs.ParseOutcome.Failure;
+import worms.model.programs.ProgramParser;
 import worms.model.world.World;
 import worms.model.world.entity.*;
 import worms.util.Position;
@@ -351,8 +357,18 @@ public class Facade implements IFacade {
 	@Override
 	public ParseOutcome<?> parseProgram(String programText,
 			IActionHandler handler) {
-		// TODO Auto-generated method stub
-		return null;
+		ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
+                ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
+                Program program;
+                
+                parser.parse(programText);
+                
+                if(parser.getErrors().isEmpty()) {
+                    program = new Program(parser.getGlobals(), parser.getStatement()); //pass: statement, globals
+                    return ParseOutcome.success(program);
+                } else {
+                    return ParseOutcome.failure(parser.getErrors());
+                }
 	}
 
 	@Override
