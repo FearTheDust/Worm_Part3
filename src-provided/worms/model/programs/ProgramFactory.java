@@ -236,19 +236,19 @@ public interface ProgramFactory<E, S, T> {
 
 	/**
 	 * Create an expression that represents the square root of the value of
-	 * expression e1 and the value of the expression e2
+	 * expression e
 	 */
 	public E createSqrt(int line, int column, E e);
 
 	/**
 	 * Create an expression that represents the sine of the value of expression
-	 * e1 and the value of the expression e2
+	 * e
 	 */
 	public E createSin(int line, int column, E e);
 
 	/**
 	 * Create an expression that represents the cosine of the value of
-	 * expression e1 and the value of the expression e2
+	 * expression e
 	 */
 	public E createCos(int line, int column, E e);
 

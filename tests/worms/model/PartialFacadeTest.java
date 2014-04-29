@@ -108,7 +108,7 @@ public class PartialFacadeTest {
 		facade.startGame(world); // this will run the program
 		double newOrientation = facade.getOrientation(worm);
 		assertEquals(oldOrientation + 1.5, newOrientation, EPS);
-		assertNotEquals(worm, facade.getCurrentWorm(world)); // turn must end after executing program
+		assertTrue(worm != facade.getCurrentWorm(world)); // turn must end after executing program
 	}
 
 }

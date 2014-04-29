@@ -2,6 +2,7 @@ package worms.model.world.entity;
 
 import be.kuleuven.cs.som.annotate.*;
 import worms.model.Constants;
+import worms.model.Entity;
 import worms.model.world.World;
 import worms.util.Position;
 
@@ -18,7 +19,7 @@ import worms.util.Position;
  * @invar	The position of this food is never null.
  *			| this.getPosition() != null
  */
-public class Food extends GameObject {
+public class Food extends GameObject implements Entity {
 
 	/**
 	 * Initialize Food with a certain position.
@@ -59,7 +60,7 @@ public class Food extends GameObject {
 
 	/**
 	 * Check if this food is alive,
-	 * 		meaning it is not yet eaten, living in a world that is not null and lies within the bonudaries of that world.
+	 * 		meaning it is not yet eaten, living in a world that is not null and lies within the boundaries of that world.
 	 */
 	@Override @Basic
 	public boolean isAlive() {
@@ -73,9 +74,64 @@ public class Food extends GameObject {
 	 * 		| new.isAlive() == false
 	 */
 	public void setToEaten() {
-		this.alive = false;
+            this.alive = false;
 	}
 	
 	private boolean alive;
+
+    /**
+     * 
+     * @return
+     * @throws IllegalStateException 
+     *          This class doesn't support an angle and will throw this exception.
+     */
+    @Override
+    public double getAngle() throws IllegalStateException {
+        throw new IllegalStateException(this.getClass() + " does not support an angle.");
+    }
+
+    /**
+     *
+     * @return 
+     * @throws IllegalStateException 
+     *          This class doesn't support hit points and will throw this exception.
+     */
+    @Override
+    public double getHP() throws IllegalStateException {
+        throw new IllegalStateException(this.getClass() + " does not support hit points.");
+    }
+
+    /**
+     *
+     * @return 
+     * @throws IllegalStateException 
+     *          This class doesn't support maximum hit points and will throw this exception.
+     */
+    @Override
+    public double getMaxHP() throws IllegalStateException {
+        throw new IllegalStateException(this.getClass() + " does not support maximum hit points.");
+    }
+
+    /**
+     *
+     * @return 
+     * @throws IllegalStateException 
+     *          This class doesn't support action points and will throw this exception.
+     */
+    @Override
+    public double getAP() throws IllegalStateException {
+        throw new IllegalStateException(this.getClass() + " does not support action points.");
+    }
+
+     /**
+     *
+     * @return 
+     * @throws IllegalStateException 
+     *          This class doesn't support maximum action points and will throw this exception.
+     */
+    @Override
+    public double getMaxAP() throws IllegalStateException {
+        throw new IllegalStateException(this.getClass() + " does not support maximum action points.");
+    }
 
 }
