@@ -2,7 +2,6 @@ package worms.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Random;
 import worms.gui.game.IActionHandler;
 import worms.model.equipment.weapons.Weapon;
@@ -11,7 +10,6 @@ import worms.model.program.ProgramFactoryImpl;
 import worms.model.program.Variable;
 import worms.model.program.statements.Statement;
 import worms.model.programs.ParseOutcome;
-import worms.model.programs.ParseOutcome.Failure;
 import worms.model.programs.ProgramParser;
 import worms.model.world.World;
 import worms.model.world.entity.*;
@@ -138,10 +136,13 @@ public class Facade implements IFacade {
 		Position position = world.getRandomPassablePos(0.5);
 		Worm worm;
 
+                if(!this.isWellFormed(program))
+                    throw new ModelException("Not a well formed program.");
+                
 		if(position!=null) {
 			String[] names = {"Brent", "Vincent" , "Eric", "Jasper", "Thomas H", "Jan Tobias", "Syeda", "Andreas", "Tom", "Gijs", 
-				"Thomas V", "Koen", "Change my name", "Hendrik", "Philip", "Yolande", "Marc",  "Andr�", "Bart",  "Arno", 
-					"FearTheDust", "Brancus", "This deserves at least a 16"};
+				"Thomas V", "Koen", "Change my name", "Hendrik", "Philip", "Yolande", "Marc",  "André", "Bart",  "Arno", 
+					"FearTheDust", "Brancus", "This deserves at least a 17"};
 			
 			worm = createWorm(world, position.getX(), position.getY(), 0, 0.5, names[world.getRandom().nextInt(names.length)], program);
 			worm.softFall();
@@ -357,8 +358,10 @@ public class Facade implements IFacade {
 	@Override
 	public ParseOutcome<?> parseProgram(String programText,
 			IActionHandler handler) {
+            
 		ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
                 ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
+                factory.setProgramParser(parser);
                 Program program;
                 
                 parser.parse(programText);

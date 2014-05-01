@@ -34,7 +34,9 @@ public class Variable {
      * 
      * @see If value != null this.setValue(value) since value has restrictions on its type.   
      */
-    public Variable(Class type, Object value) {        
+    public Variable(Class type, Object value) throws IllegalArgumentException{    
+        if(type==null)
+            throw new IllegalArgumentException("The type can't be null.");
         this.type = type;
         if(value != null)
             this.setValue(value);
@@ -61,11 +63,10 @@ public class Variable {
         if(value instanceof Number)
             value = ((Number) value).doubleValue();
         
-        if(type.isInstance(value) || (Entity.class.isAssignableFrom(type) && value == null)) {
+        if(getType().isInstance(value) || (Entity.class.isAssignableFrom(getType()) && value == null))
             this.value = value;
-        } else {
+        else
             throw new IllegalArgumentException("The value has to be the same as the type of the variable.");
-        }
     }
     
     /**
@@ -76,7 +77,7 @@ public class Variable {
         return type;
     }
     
-    private Class type;
+    private final Class type;
     
     /**
      * The current value of this variable.
@@ -88,4 +89,25 @@ public class Variable {
     
     private Object value;
  
+    /**
+     * Whether the given value has a valid value type for this variable.
+     * @param value The value to check.
+     * @return Whether it is valid.
+     */
+    public boolean isValidValueType(Object value) {
+        if(value instanceof Number)
+            value = ((Number) value).doubleValue();
+        
+        return getType().isInstance(value) || (Entity.class.isAssignableFrom(getType()) && value == null);
+    }
+    
+    /**
+     * Returns whether this expression is of a valid type for this variable.
+     * @param expression The expression to check
+     * @return Whether it is valid.
+     */
+    public boolean isValidValueType(Expression expression) {
+        return this.getType().isInstance(expression.getType());
+    }
+    
 }

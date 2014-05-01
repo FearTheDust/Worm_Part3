@@ -15,4 +15,10 @@ public interface Expression {
      */
     public Object getResult();
     
+    /**
+     * The type of the expression.
+     * @return The type.
+     */
+    public Class getType();
+    
 }

@@ -13,22 +13,22 @@ package worms.model.program.exceptions;
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */
-public class IllegalTypeException extends IllegalArgumentException {
+public class IllegalTypeException extends IllegalArgException {
     
-    public IllegalTypeException () {
-        super();
+    public IllegalTypeException (int line, int column) {
+        super(line, column);
     }
 
-    public IllegalTypeException (String message) {
-        super(message);
+    public IllegalTypeException (int line, int column, String message) {
+        super(line, column, message);
     }
 
     public IllegalTypeException (Throwable cause) {
         super(cause);
     }
 
-    public IllegalTypeException (String message, Throwable cause) {
-        super(message, cause);
+    public IllegalTypeException (int line, int column, String message, Throwable cause) {
+        super(line, column, message, cause);
     }
     
 }

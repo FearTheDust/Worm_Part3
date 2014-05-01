@@ -1,6 +1,7 @@
 
 package worms.model.program.statements;
 
+import worms.gui.game.IActionHandler;
 import worms.model.program.Expression;
 
 /**
@@ -15,18 +16,23 @@ public class PrintStatement implements Statement {
      * Prints the result of the expression.
      * @param e The expression to print the result of.
      */
-    public PrintStatement(Expression e) {
+    public PrintStatement(IActionHandler handler, Expression e) throws IllegalArgumentException {
+        if(handler == null)
+            throw new IllegalArgumentException("The handler can't be null.");
+        this.handler = handler;
         this.expression = e;
     }
+    
+    private final IActionHandler handler;
     
     private final Expression expression;
     
     @Override
     public void execute() {
         if(expression == null)
-            System.out.println(expression);
+            handler.print(expression.toString());
         else
-            System.out.println(expression.getResult());
+            handler.print(expression.getResult().toString());
     }
     
 }

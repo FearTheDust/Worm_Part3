@@ -141,4 +141,11 @@ public class ProgramParser<E, S, T> {
 	public S getStatement() {
 		return statement;
 	}
+        
+        /**
+         * This method returns the factory the parser is using.
+         */
+        public ProgramFactory getFactory() {
+            return factory;
+        }
 }

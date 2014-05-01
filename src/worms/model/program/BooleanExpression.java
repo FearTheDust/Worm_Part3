@@ -6,9 +6,13 @@ package worms.model.program;
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */
-public interface BooleanExpression extends Expression {
+public abstract class BooleanExpression implements Expression {
     
     @Override
-    public Boolean getResult();
+    public abstract Boolean getResult();
     
+    @Override
+    public Class getType() {
+        return Boolean.class;
+    }
 }

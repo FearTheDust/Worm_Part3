@@ -9,9 +9,13 @@ import worms.model.Entity;
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */
-public interface EntityExpression extends Expression {
+public abstract class EntityExpression implements Expression {
     
     @Override
-    public Entity getResult();
+    public abstract Entity getResult();
     
+    @Override
+    public Class getType() {
+        return Entity.class;
+    }
 }

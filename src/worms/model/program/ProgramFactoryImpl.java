@@ -3,6 +3,7 @@ package worms.model.program;
 import java.util.List;
 import worms.gui.game.IActionHandler;
 import worms.model.Entity;
+import worms.model.program.exceptions.IllegalArgException;
 import worms.model.program.exceptions.IllegalTypeException;
 import worms.model.program.statements.*;
 import worms.model.programs.ProgramFactory;
@@ -11,11 +12,13 @@ import worms.model.world.entity.Food;
 import worms.model.world.entity.Worm;
 import worms.util.Util;
 
-// TODO : Is line/column meant to just be used to give more accurate exceptions? As in give the user where the exception happend in his program. 
 // TODO : Still something fishy about the exceptions? compile-time? -> Don't stop but just store the exception error thrown so we can see all exceptions?
 
 /**
  * The class implementing the ProgramFactory which handles our design.
+ * 
+ * When we want to execute the program build by this programFactory we have to make sure we set the worm (this.setWorm(Worm)) right BEFORE
+ * we try to execute the program. Also, every worm requires a new factory.
  * 
  * When a wrong type of expression or .. is presented an exception will be thrown.
  * This is not stated in the function itself since we don't allow anyone to catch them as we want the program to terminate.
@@ -33,19 +36,34 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
         this.handler = handler;
     }
     
-    private IActionHandler handler;
+    private final IActionHandler handler;
     
-    //TODO: Finish up + doc + null pointer
     /**
      * Set the program parser for this ProgramFactoryImpl.
-     * @param parser 
+     * @param parser The parser to parse with.
+     * @throws IllegalArgumentException
+     *          When the parser isn't using this factory.
      */
-    public void setProgramParser(ProgramParser parser) {
-        this.parser = parser;
+    public void setProgramParser(ProgramParser parser) throws IllegalArgumentException {
+        if(parser.getFactory() == this)
+            this.parser = parser;
+        else
+            throw new IllegalArgumentException();
     }
-
-    //TODO (vraag) We need a way to get the list of all globals (assignmentStatement), should/is it best to user ProgramParser for this or is there anyother way?
-    ProgramParser parser;
+    
+    /**
+     * Set the worm for the factory to execute the statements for.
+     * @param worm The worm where this Program is made for.
+     */
+    public void setWorm(Worm worm) {
+        if(this.worm != null)
+            throw new IllegalStateException("This factory already has a worm set.");
+        
+        this.worm = worm;
+    }
+    
+    private Worm worm;
+    private ProgramParser parser;
     
     @Override
     public DoubleExpression createDoubleLiteral(int line, int column, final double d) {
@@ -70,7 +88,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createAnd(int line, int column, final Expression e1, final Expression e2) {
         if (!(e1 instanceof BooleanExpression) || !(e2 instanceof BooleanExpression))
-            throw new IllegalTypeException("An &&-expression must consist of atleast 2 BooleanExpressions");
+            throw new IllegalTypeException(line, column, "An &&-expression must consist of atleast 2 BooleanExpressions");
         
         return new BooleanExpression() {
             @Override
@@ -83,12 +101,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createOr(int line, int column, final Expression e1, final Expression e2) {
         if (!(e1 instanceof BooleanExpression) || !(e2 instanceof BooleanExpression))
-            throw new IllegalTypeException("An ||-expression must consist of atleast 2 BooleanExpressions");
+            throw new IllegalTypeException(line, column, "An ||-expression must consist of atleast 2 BooleanExpressions");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return ((BooleanExpression) e1).getResult() && ((BooleanExpression) e2).getResult();
+                return ((BooleanExpression) e1).getResult() || ((BooleanExpression) e2).getResult();
             }
         };
     }
@@ -96,7 +114,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createNot(int line, int column, final Expression e) {
         if (!(e instanceof BooleanExpression))
-            throw new IllegalTypeException("The !-expression must consist of a BooleanExpression.");
+            throw new IllegalTypeException(line, column, "The !-expression must consist of a BooleanExpression.");
         
         return new BooleanExpression() {
             @Override
@@ -118,18 +136,25 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public EntityExpression createSelf(int line, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new EntityExpression() {
+            @Override
+            public Entity getResult() {
+                if(worm == null)
+                    throw new IllegalStateException("The ProgramFactory has to have its worm set before we try to execute any statements created by the factory.");
+                return worm;
+            }
+        };
     }
 
     @Override
     public DoubleExpression createGetX(int line, int column, final Expression e) {
         if(!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                //can throw NullPointerException when necessary :)
+                //can throw NullPointerException/NotSupported/.. when necessary :)
                 return ((EntityExpression) e).getResult().getPosition().getX();
             }
         };
@@ -138,7 +163,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createGetY(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new DoubleExpression() {
             @Override
@@ -151,7 +176,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createGetRadius(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new DoubleExpression() {
             @Override
@@ -164,7 +189,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createGetDir(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new DoubleExpression() {
             @Override
@@ -177,7 +202,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createGetAP(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new DoubleExpression() {
             @Override
@@ -190,7 +215,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createGetMaxAP(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new DoubleExpression() {
             @Override
@@ -203,7 +228,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createGetHP(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new DoubleExpression() {
             @Override
@@ -216,7 +241,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createGetMaxHP(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new DoubleExpression() {
             @Override
@@ -240,7 +265,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createIsWorm(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new BooleanExpression() {
             @Override
@@ -253,7 +278,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createIsFood(int line, int column, final Expression e) {
         if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException("The parameter must be an entity.");
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new BooleanExpression() {
             @Override
@@ -271,7 +296,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createLessThan(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
         return new BooleanExpression() {
             @Override
@@ -284,7 +309,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createGreaterThan(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
         return new BooleanExpression() {
             @Override
@@ -297,7 +322,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createLessThanOrEqualTo(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
         return new BooleanExpression() {
             @Override
@@ -310,7 +335,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public BooleanExpression createGreaterThanOrEqualTo(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
         return new BooleanExpression() {
             @Override
@@ -322,8 +347,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createEquality(int line, int column, final Expression e1, final Expression e2) {
-        //If different expression types it will return false anyway, so we don't check it. no worries.
-        //TODO: (vraag) moeten wij zelf een error geven?
+        if(!e1.getClass().isInstance(e2) && !e2.getClass().isInstance(e1))
+            throw new IllegalTypeException(line, column, "Both expressions must have the same type.");
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
@@ -340,7 +365,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createAdd(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
         return new DoubleExpression() {
             @Override
@@ -353,7 +378,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createSubtraction(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
         return new DoubleExpression() {
             @Override
@@ -366,7 +391,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createMul(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
         return new DoubleExpression() {
             @Override
@@ -379,8 +404,9 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createDivision(int line, int column, final Expression e1, final Expression e2) {
         if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
         
+        // Division by zero will automatically throw an exception so we don't have to do it manually.
         return new DoubleExpression() {
             @Override
             public Double getResult() {
@@ -392,7 +418,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createSqrt(int line, int column, final Expression e) {
         if(!(e instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
         
         return new DoubleExpression() {
             @Override
@@ -405,7 +431,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createSin(int line, int column, final Expression e) {
         if(!(e instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
         
         return new DoubleExpression() {
             @Override
@@ -418,7 +444,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public DoubleExpression createCos(int line, int column, final Expression e) {
         if(!(e instanceof DoubleExpression))
-            throw new IllegalTypeException();
+            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
         
         return new DoubleExpression() {
             @Override
@@ -429,48 +455,104 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createTurn(int line, int column, Expression angle) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Statement createTurn(int line, int column, final Expression angle) {
+        if (!(angle instanceof DoubleExpression))
+            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
+
+        return new ActionStatement() {
+            @Override
+            public void execute() {
+                handler.turn(worm, ((DoubleExpression) angle).getResult());
+            }
+        };
     }
 
     @Override
     public Statement createMove(int line, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ActionStatement() {
+            @Override
+            public void execute() {
+                handler.move(worm);
+            }
+        };
     }
 
     @Override
     public Statement createJump(int line, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ActionStatement() {
+            @Override
+            public void execute() {
+                handler.jump(worm);
+            }
+        };
     }
 
     @Override
     public Statement createToggleWeap(int line, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ActionStatement() {
+            @Override
+            public void execute() {
+                handler.toggleWeapon(worm);
+            }
+        };
     }
 
     @Override
-    public Statement createFire(int line, int column, Expression yield) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Statement createFire(int line, int column, final Expression yield) {
+        if (!(yield instanceof DoubleExpression))
+            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
+
+        return new ActionStatement() {
+            @Override
+            public void execute() {
+                handler.fire(worm, (int) ((double) ((DoubleExpression) yield).getResult()));
+            }
+        };
     }
 
     @Override
     public Statement createSkip(int line, int column) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ActionStatement() {
+            @Override
+            public void execute() {
+            
+            }
+        };
     }
 
     @Override
-    public Statement createAssignment(int line, int column, String variableName, Expression rhs) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public AssignmentStatement createAssignment(int line, int column, String variableName, Expression rhs) {
+        if(parser.getGlobals().containsKey(variableName)) {
+            Variable variable = (Variable) parser.getGlobals().get(variableName);
+            if(variable.isValidValueType(rhs))
+                return new AssignmentStatement(parser, variableName, rhs);
+            else
+                throw new IllegalTypeException(line, column, "The type of the variable must be of type " + variable.getType());
+        } else {
+            throw new IllegalArgException(line, column, "The variable " + variableName + " doesn't exists");
+        }
     }
 
     @Override
-    public Statement createIf(int line, int column, Expression condition, Statement then, Statement otherwise) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public IfStatement createIf(int line, int column, Expression condition, Statement then, Statement otherwise) {
+        if(!(condition instanceof BooleanExpression))
+            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression.");
+        try {
+            return new IfStatement((BooleanExpression) condition, then, otherwise);
+        } catch(IllegalArgumentException ex) {
+            throw new IllegalTypeException(line, column, ex.getMessage());
+        }
     }
 
     @Override
-    public Statement createWhile(int line, int column, Expression condition, Statement body) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public WhileStatement createWhile(int line, int column, Expression condition, Statement body) {
+        if(!(condition instanceof BooleanExpression))
+            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression.");
+        try {
+            return new WhileStatement((BooleanExpression) condition, body);
+        } catch(IllegalArgumentException ex) {
+            throw new IllegalTypeException(line, column, ex.getMessage());
+        }
     }
 
     @Override
@@ -479,13 +561,13 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createSequence(int line, int column, List<Statement> statements) {
+    public SequencedStatement createSequence(int line, int column, List<Statement> statements) {
         return new SequencedStatement(statements);
     }
 
     @Override
-    public Statement createPrint(int line, int column, Expression e) {
-        return new PrintStatement(e);
+    public PrintStatement createPrint(int line, int column, Expression e) {
+        return new PrintStatement(handler, e);
     }
 
     @Override

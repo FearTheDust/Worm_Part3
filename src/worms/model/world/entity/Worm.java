@@ -36,7 +36,7 @@ import worms.util.*;
  * @author Derkinderen Vincent - Bachelor Informatica - R0458834
  * @author Coosemans Brent - Bachelor Informatica - R0376498
  * 
- * @Repository https://github.com/FearTheDust/Project_Worm2.git
+ * @Repository https://github.com/FearTheDust/Worm_Part3
  * 
  * @invar	This worm's action points amount is at all times less than or equal to the maximum amount of action points allowed and greater than or equal to 0.
  * 			| 0 <= this.getCurrentActionPoints() <= this.getMaximumActionPoints()
@@ -1049,6 +1049,16 @@ public class Worm extends GameObject implements Entity {
     @Override
     public double getMaxAP() {
         return this.getMaximumActionPoints();
+    }
+    
+    /**
+     * TODO: doc + ook hierboven
+     * @return 
+     */
+    @Override
+    public String toString() {
+        return ("Name: " + this.getName() + " ; AP: " + this.getCurrentActionPoints() + "/" + this.getMaximumActionPoints()
+                + " ; HP: " + this.getCurrentHitPoints() + "/" + this.getMaximumHitPoints());
     }
 	
 }
