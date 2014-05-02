@@ -463,13 +463,13 @@ public class WormsParserMyListener<E, S, T> implements WormsParserListener {
 	// implementations of method bodies below.
 	// ------------------------------------------------------------------------
 
-	public Map<String, T> getGlobals() {
-		if (globals == null) {
-			return Collections.emptyMap();
-		} else {
-			return globals;
-		}
-	}
+    public Map<String, T> getGlobals() {
+        if (globals == null) {
+            return Collections.emptyMap();
+        } else {
+            return globals;
+        }
+    }
 
 	public S getStatement() {
 		if (statement == null) {

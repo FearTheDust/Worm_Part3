@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package worms.model.program.statements;
 
@@ -24,9 +19,7 @@ public class AssignmentStatement implements Statement {
     }
     
     private final ProgramParser parser;
-    
     private final String variableName;
-    
     private final Expression rhs;
     
     @Override
@@ -40,6 +33,15 @@ public class AssignmentStatement implements Statement {
         } else {
             throw new IllegalStateException("The variable " + variableName + " isn't an existing variable anymore.");
         }
+    }
+
+    /**
+     * Returns false.
+     * @return false.
+     */
+    @Override
+    public boolean hasActionStatement() {
+        return false;
     }
     
 }

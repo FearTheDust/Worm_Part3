@@ -14,6 +14,7 @@ public class PrintStatement implements Statement {
     
     /**
      * Prints the result of the expression.
+     * @param handler The ActionHandler to use for printing.
      * @param e The expression to print the result of.
      */
     public PrintStatement(IActionHandler handler, Expression e) throws IllegalArgumentException {
@@ -33,6 +34,15 @@ public class PrintStatement implements Statement {
             handler.print(expression.toString());
         else
             handler.print(expression.getResult().toString());
+    }
+
+    /**
+     * Returns false. 
+     * @return false.
+     */
+    @Override
+    public boolean hasActionStatement() {
+       return false;
     }
     
 }

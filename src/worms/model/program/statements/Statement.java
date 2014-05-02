@@ -8,8 +8,16 @@ package worms.model.program.statements;
  */
 public interface Statement {
     
-    // TODO: add doc and think about this concept.
-    //May throw any exception.
+    /**
+     * Execute the statement.
+     * This may or may not throw any exception as wished.
+     */
     public void execute();
+    
+    /**
+     * Returns whether or not this statement contains or is an ActionStatement.
+     * @return 
+     */
+    public boolean hasActionStatement();
     
 }

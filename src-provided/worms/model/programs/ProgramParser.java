@@ -144,6 +144,7 @@ public class ProgramParser<E, S, T> {
         
         /**
          * This method returns the factory the parser is using.
+         * @return 
          */
         public ProgramFactory getFactory() {
             return factory;

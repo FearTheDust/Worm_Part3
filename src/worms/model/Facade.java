@@ -361,7 +361,7 @@ public class Facade implements IFacade {
             
 		ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
                 ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
-                factory.setProgramParser(parser);
+                factory.setProgramParser(parser); //NullPointerException
                 Program program;
                 
                 parser.parse(programText);

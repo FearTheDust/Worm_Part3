@@ -34,5 +34,19 @@ public class SequencedStatement implements Statement {
         for(Statement statement : statements)
             statement.execute();
     }
+
+    /**
+     * Checks each statement whether or not it contains an ActionStatement.
+     * @return True if at least one does.
+     */
+    @Override
+    public boolean hasActionStatement() {
+        for(Statement statement : statements) {
+            if(statement.hasActionStatement())
+                return true;
+        }
+        
+        return false;
+    }
     
 }

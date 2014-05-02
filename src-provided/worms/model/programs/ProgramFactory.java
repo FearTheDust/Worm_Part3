@@ -1,6 +1,7 @@
 package worms.model.programs;
 
 import java.util.List;
+import worms.model.world.entity.Worm;
 
 /**
  * A factory for creating expressions, statements and types.
@@ -351,4 +352,6 @@ public interface ProgramFactory<E, S, T> {
 	 * declared type 'entity'.
 	 */
 	public T createEntityType();
+        
+        public Worm getWorm();
 }

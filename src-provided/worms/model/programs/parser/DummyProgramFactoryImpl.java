@@ -3,6 +3,7 @@ package worms.model.programs.parser;
 import java.util.List;
 
 import worms.model.programs.ProgramFactory;
+import worms.model.world.entity.Worm;
 
 class DummyExpression {
 
@@ -263,5 +264,10 @@ public class DummyProgramFactoryImpl
   public DummyType createEntityType() {
     return (null);
   }
+
+    @Override
+    public Worm getWorm() {
+        return (null);
+    }
 }
 

@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.RecognitionException;
 
 import worms.model.programs.ProgramFactory;
 import worms.model.programs.ProgramParser;
+import worms.model.world.entity.Worm;
 
 class PrintingObject {
 
@@ -429,4 +430,9 @@ public class PrintingProgramFactoryImpl implements
 		parser.parse(string);
 		System.out.println(parser.getStatement());
 	}
+
+    @Override
+    public Worm getWorm() {
+        return null;
+    }
 }

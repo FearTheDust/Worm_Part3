@@ -73,4 +73,12 @@ public interface Entity {
      */
     public double getMaxAP() throws IllegalStateException;
     
+    /**
+     * The current team of this entity.
+     * @return The team of the entity.
+     * @throws IllegalStateException
+     *          This may throw an IllegalStateException if the class implementing this doesn't support teams.
+     */
+    public Team getTeam() throws IllegalStateException;
+    
 }

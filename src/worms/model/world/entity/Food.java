@@ -3,6 +3,7 @@ package worms.model.world.entity;
 import be.kuleuven.cs.som.annotate.*;
 import worms.model.Constants;
 import worms.model.Entity;
+import worms.model.Team;
 import worms.model.world.World;
 import worms.util.Position;
 
@@ -132,6 +133,17 @@ public class Food extends GameObject implements Entity {
     @Override
     public double getMaxAP() throws IllegalStateException {
         throw new IllegalStateException(this.getClass() + " does not support maximum action points.");
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IllegalStateException 
+     *          This class doesn't support teams.
+     */
+    @Override
+    public Team getTeam() throws IllegalStateException {
+        throw new IllegalStateException(this.getClass() + " does not support teams.");
     }
 
 }

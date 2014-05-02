@@ -27,4 +27,13 @@ public class WhileStatement implements Statement {
         while(condition.getResult())
             body.execute();
     }
+
+    /**
+     * Returns whether the body contains an ActionStatement.
+     * @return Whether it does.
+     */
+    @Override
+    public boolean hasActionStatement() {
+        return body.hasActionStatement();
+    }
 }

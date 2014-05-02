@@ -51,6 +51,10 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
             throw new IllegalArgumentException();
     }
     
+    public ProgramParser getProgramParser() {
+        return this.parser;
+    }
+    
     /**
      * Set the worm for the factory to execute the statements for.
      * @param worm The worm where this Program is made for.
@@ -252,13 +256,21 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public BooleanExpression createSameTeam(int line, int column, Expression e) {
-        //TODO suggestion so far: add getTeam to Entity??
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public BooleanExpression createSameTeam(int line, int column, final Expression e) {
+        if(!(e instanceof EntityExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+        
+        return new BooleanExpression() {
+            @Override
+            public Boolean getResult() {
+                    return getWorm().getTeam() == ((EntityExpression) e).getResult().getTeam();
+            }
+        };
     }
 
     @Override
     public EntityExpression createSearchObj(int line, int column, Expression e) {
+        //TODO: finish this.
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -289,8 +301,53 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Expression createVariableAccess(int line, int column, String name) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Expression createVariableAccess(final int line, final int column, final String name) {
+        //Is complex because we cannot call getGlobals while parsing...
+        //TODO  problems with type (expression)
+        return new Expression() {
+            @Override
+            public Object getResult() {
+                final Variable variable = (Variable) getProgramParser().getGlobals().get("name");
+                if(variable == null)
+                    throw new IllegalArgException(line, column, name + " does not exist.");
+                
+                if(variable.getType() == Double.class) {
+                    return new DoubleExpression() {
+                        @Override
+                        public Double getResult() {
+                            return (Double) variable.getValue();
+                        }
+                        
+                    };
+                    
+                } else if(variable.getType() == Boolean.class) {
+                    return new BooleanExpression() {
+                        @Override
+                        public Boolean getResult() {
+                            return (Boolean) variable.getValue();
+                        }
+                        
+                    };
+                } else if(variable.getType().isAssignableFrom(Entity.class)) {
+                    return new EntityExpression() {
+                        @Override
+                        public Entity getResult() {
+                            return (Entity) variable.getValue();
+                        }
+                    };
+                }
+                return null;
+            }
+
+            @Override
+            public Class getType() {
+                Variable variable = (Variable) getProgramParser().getGlobals().get("name");
+                if (variable == null)
+                    throw new IllegalArgException(line, column, name + " does not exist.");
+                
+                return variable.getType();
+            }
+        };
     }
 
     @Override
@@ -522,15 +579,17 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public AssignmentStatement createAssignment(int line, int column, String variableName, Expression rhs) {
-        if(parser.getGlobals().containsKey(variableName)) {
+        //We cannot check for this error before executing the program since we don't have any acces to the globalList before the parser is done parsing.
+        //:(
+        /*if(parser.getGlobals().containsKey(variableName)) {
             Variable variable = (Variable) parser.getGlobals().get(variableName);
-            if(variable.isValidValueType(rhs))
+            if(variable.isValidValueType(rhs))*/
                 return new AssignmentStatement(parser, variableName, rhs);
-            else
+           /* else
                 throw new IllegalTypeException(line, column, "The type of the variable must be of type " + variable.getType());
         } else {
             throw new IllegalArgException(line, column, "The variable " + variableName + " doesn't exists");
-        }
+        }*/
     }
 
     @Override
@@ -557,7 +616,11 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public Statement createForeach(int line, int column, ForeachType type, String variableName, Statement body) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            return new ForEachStatement(this, type, variableName, this.getProgramParser(), body);
+        } catch(IllegalArgumentException ex) {
+            throw new IllegalArgException(line, column, ex.getMessage());
+        }
     }
 
     @Override
@@ -583,6 +646,11 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public Variable createEntityType() {
         return new Variable(Entity.class);
+    }
+
+    @Override
+    public Worm getWorm() {
+        return worm;
     }
 
 }

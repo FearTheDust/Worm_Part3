@@ -2,7 +2,6 @@
 package worms.model.program.statements;
 
 import worms.model.program.BooleanExpression;
-import worms.model.program.Expression;
 
 /**
  * If statement (condition, then, else)
@@ -39,6 +38,15 @@ public class IfStatement implements Statement {
             thenStatement.execute();
         else
             otherwiseStatement.execute();
+    }
+
+    /**
+     * Whether the then or else Statements contain an ActionStatement.
+     * @return Whether they do.
+     */
+    @Override
+    public boolean hasActionStatement() {
+        return thenStatement.hasActionStatement() || otherwiseStatement.hasActionStatement();
     }
     
 }
