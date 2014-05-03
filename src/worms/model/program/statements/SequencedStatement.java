@@ -2,6 +2,7 @@
 package worms.model.program.statements;
 
 import java.util.List;
+import worms.model.Program;
 
 /**
  * Represents a statement which is a list of statements.
@@ -29,10 +30,21 @@ public class SequencedStatement implements Statement {
     
     private final List<Statement> statements;
     
+    /***
+     * Execute all statements.
+     * When a statement fails, stop & returns false.
+     * 
+     * @param program The program to execute the statements on.
+     * 
+     * @return False when a statement failed.
+     */
     @Override
-    public void execute() {
-        for(Statement statement : statements)
-            statement.execute();
+    public boolean execute(Program program) {
+        for(Statement statement : statements) {
+            if(!statement.execute(program))
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -48,5 +60,9 @@ public class SequencedStatement implements Statement {
         
         return false;
     }
+
+    /*@Override
+    public void perform() {
+    }*/
     
 }

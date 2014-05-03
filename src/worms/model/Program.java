@@ -2,9 +2,14 @@ package worms.model;
 
 import java.util.Map;
 import worms.model.program.Variable;
+import worms.model.program.statements.ConditionalStatement;
 import worms.model.program.statements.Statement;
 
 public class Program {
+    
+    public static final int MAX_STATEMENT_AMOUNT = 1000;
+    
+    
     //POSSIBLE TODO's
     //TODO: We could add clone functions to Statements so we could clone them.
     //So if a statement has conditions on it we could clone the input so when executing the reference couldn't have been changed from the outside.
@@ -40,6 +45,23 @@ public class Program {
     }
 
     private Map<String, Variable> globalMap;
+    
+    public void execute() {
+        counter = MAX_STATEMENT_AMOUNT;
+        
+        if(finished) {
+            finished = false;
+            this.getMainStatement().execute(this);
+            finished = true;
+            this.setLastStatement(null);
+        } else {
+            
+        }
+    }
+    
+    
+    
+    
 
     /**
      * Return a reference to the main statement of this Program.
@@ -50,6 +72,60 @@ public class Program {
         return mainStatement;
     }
 
-    private Statement mainStatement;
+    private final Statement mainStatement;
+    
+    /**
+     * Set the last statement we executed to statement.
+     * If this value is not null it means we will start executing the given statement next time.
+     * 
+     * @param statement The statement we will execute the next time.
+     */
+    public void setLastStatement(ConditionalStatement statement) {
+        this.lastStatement = statement;
+    }
+    
+    /**
+     * Get the last executed statement. This is the statement we will start at next time.
+     * @return 
+     */
+    public ConditionalStatement getLastStatement() {
+        return lastStatement;
+    }
+    
+    private ConditionalStatement lastStatement;
+    
+    /**
+     * Add one to the counter/the amount of statements we processed so far.
+     */
+    public void subtractFromCounter() {
+        this.counter--;
+    }
+    
+    /**
+     * MAX_STATEMENT_AMOUNT - The amount of statements we processed so far/last time.
+     * @return MAX_STATEMENT_AMOUNT - The amount of statements we have processed.
+     */
+    public int getCounter() {
+        return this.counter;
+    }
+    
+    private int counter = MAX_STATEMENT_AMOUNT;
+    
+    /**
+     * Check whether the program finished properly last time.
+     * @return 
+     */
+    public boolean isFinished() {
+        return this.finished;
+    }
+    
+    /**
+     * Toggle the value of isFinished().
+     */
+    public void toggleFinished() {
+        this.finished = !this.finished;
+    }
+    
+    private boolean finished = true;
 
 }

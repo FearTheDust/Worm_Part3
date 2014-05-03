@@ -3,6 +3,7 @@ package worms.model.program;
 import java.util.List;
 import worms.gui.game.IActionHandler;
 import worms.model.Entity;
+import worms.model.Program;
 import worms.model.program.exceptions.IllegalArgException;
 import worms.model.program.exceptions.IllegalTypeException;
 import worms.model.program.statements.*;
@@ -518,8 +519,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
         return new ActionStatement() {
             @Override
-            public void execute() {
-                handler.turn(worm, ((DoubleExpression) angle).getResult());
+            public boolean perform(Program program) {
+                return handler.turn(worm, ((DoubleExpression) angle).getResult());
             }
         };
     }
@@ -528,8 +529,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     public Statement createMove(int line, int column) {
         return new ActionStatement() {
             @Override
-            public void execute() {
-                handler.move(worm);
+            public boolean perform(Program program) {
+                return handler.move(worm);
             }
         };
     }
@@ -538,8 +539,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     public Statement createJump(int line, int column) {
         return new ActionStatement() {
             @Override
-            public void execute() {
-                handler.jump(worm);
+            public boolean perform(Program program) {
+                return handler.jump(worm);
             }
         };
     }
@@ -548,8 +549,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     public Statement createToggleWeap(int line, int column) {
         return new ActionStatement() {
             @Override
-            public void execute() {
-                handler.toggleWeapon(worm);
+            public boolean perform(Program program) {
+                return handler.toggleWeapon(worm);
             }
         };
     }
@@ -561,8 +562,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
         return new ActionStatement() {
             @Override
-            public void execute() {
-                handler.fire(worm, (int) ((double) ((DoubleExpression) yield).getResult()));
+            public boolean perform(Program program) {
+                return handler.fire(worm, (int) ((double) ((DoubleExpression) yield).getResult()));
             }
         };
     }
@@ -571,8 +572,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     public Statement createSkip(int line, int column) {
         return new ActionStatement() {
             @Override
-            public void execute() {
-            
+            public boolean perform(Program program) {
+                return true;
             }
         };
     }
@@ -607,6 +608,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     public WhileStatement createWhile(int line, int column, Expression condition, Statement body) {
         if(!(condition instanceof BooleanExpression))
             throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression.");
+        
         try {
             return new WhileStatement((BooleanExpression) condition, body);
         } catch(IllegalArgumentException ex) {

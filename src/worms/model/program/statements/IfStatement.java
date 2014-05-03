@@ -1,6 +1,7 @@
 
 package worms.model.program.statements;
 
+import worms.model.Program;
 import worms.model.program.BooleanExpression;
 
 /**
@@ -9,7 +10,7 @@ import worms.model.program.BooleanExpression;
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */
-public class IfStatement implements Statement {
+public class IfStatement extends ConditionalStatement {
 
     /**
      * Initialize an If-Statement.
@@ -31,14 +32,6 @@ public class IfStatement implements Statement {
     private final BooleanExpression condition;
     private final Statement thenStatement;
     private final Statement otherwiseStatement;
-    
-    @Override
-    public void execute() {
-        if(condition.getResult())
-            thenStatement.execute();
-        else
-            otherwiseStatement.execute();
-    }
 
     /**
      * Whether the then or else Statements contain an ActionStatement.
@@ -47,6 +40,37 @@ public class IfStatement implements Statement {
     @Override
     public boolean hasActionStatement() {
         return thenStatement.hasActionStatement() || otherwiseStatement.hasActionStatement();
+    }
+
+    /**
+     * Execute the if or else depending on the condition.
+     * (If !program.isFinished() we will execute the if statement & if there our program didn't end earlier we'll execute the else as well.)
+     * 
+     * @param program The program where we perform this on.
+     * @return Whether performing the statements worked out well or failed.
+     */
+    @Override
+    public boolean perform(Program program) {
+        /* Perform the statement, if we're searching for the last statement -> perform both if necessary */
+        if(program.isFinished()) { //We're executing like usual
+            if(condition.getResult()) {
+                if(!thenStatement.execute(program))
+                    return false;
+            } else {
+                if(!otherwiseStatement.execute(program))
+                   return false;
+            }
+        } else { //Find the last statement! if not in first, execute second.
+            if(!thenStatement.execute(program))
+                return false;
+            
+            if(!program.isFinished()) {
+                if(!otherwiseStatement.execute(program))
+                    return false;
+            }
+        }
+        
+        return true;
     }
     
 }

@@ -2,6 +2,7 @@
 package worms.model.program.statements;
 
 import worms.gui.game.IActionHandler;
+import worms.model.Program;
 import worms.model.program.Expression;
 
 /**
@@ -28,9 +29,36 @@ public class PrintStatement implements Statement {
     
     private final Expression expression;
     
+    /**
+     * Execute the printer.
+     * @param program
+     * @return When we had executed 1000 statements already (program.getCounter() <= 0)
+     *          Set the program's lastStatement to this & return false.
+     * 
+     * @return When the program's state is isFinished() or the program's last executed statement is this.
+     *          Execute the statement code, subtract from the program's counter.
+     *              If the program wasn't finished && this is the last statement it had executed,
+     *              toggle finished back to true
+     *          return true
+     */
     @Override
-    public void execute() {
-        if(expression == null)
+    public boolean execute(Program program) {
+        if (program.getCounter() <= 0)
+            return false;
+        
+        if (program.isFinished()) {
+            this.perform();
+            program.subtractFromCounter();
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Perform the print action.
+     */
+    private void perform() {
+        if (expression == null)
             handler.print(expression.toString());
         else
             handler.print(expression.getResult().toString());
