@@ -15,12 +15,12 @@ import static worms.model.programs.ProgramFactory.ForeachType.*;
  */
 public class ForEachStatement extends ConditionalStatement {
 
-    public ForEachStatement(ProgramFactory factory, ProgramFactory.ForeachType type, Variable variable, Statement body) {
+    /*public ForEachStatement(ProgramFactory factory, ProgramFactory.ForeachType type, Variable variable, Statement body) {
         this.factory = factory;
         this.type = type;
         this.variable = variable;
         this.body = body;
-    }
+    }*/
 
     /**
      * ForEach statement.
@@ -76,6 +76,7 @@ public class ForEachStatement extends ConditionalStatement {
     /**
      * Perform the actions a ForEachStatement should.
      * Which is, create a list, iterate over it and perform the body on it.
+     * 
      * This may throw a nullPointerException when "factory.getWorm().getWorld()"
      * does.
      * 

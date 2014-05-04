@@ -12,7 +12,7 @@ public abstract class DoubleExpression implements Expression {
     public abstract Double getResult();
  
     @Override
-    public Class getType() {
+    public Class<Double> getType() {
         return Double.class;
     }
 }

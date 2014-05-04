@@ -19,6 +19,6 @@ public interface Expression {
      * The type of the expression.
      * @return The type.
      */
-    public Class getType();
+    public Class<?> getType();
     
 }

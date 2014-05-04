@@ -13,8 +13,6 @@ import worms.model.world.entity.Food;
 import worms.model.world.entity.Worm;
 import worms.util.Util;
 
-// TODO : Still something fishy about the exceptions? compile-time? -> Don't stop but just store the exception error thrown so we can see all exceptions?
-
 /**
  * The class implementing the ProgramFactory which handles our design.
  * 
@@ -271,8 +269,16 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public EntityExpression createSearchObj(int line, int column, Expression e) {
-        //TODO: finish this.
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(!(e instanceof DoubleExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be a double.");
+        return new EntityExpression() {
+
+            @Override
+            public Entity getResult() {
+                Worm worm = ProgramFactoryImpl.this.getWorm();
+                return worm.getWorld().searchObject(worm.getPosition(), worm.getAngle());
+            }
+        };
     }
 
     @Override
@@ -582,6 +588,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     public AssignmentStatement createAssignment(int line, int column, String variableName, Expression rhs) {
         //We cannot check for this error before executing the program since we don't have any acces to the globalList before the parser is done parsing.
         //:(
+        //TODO Part of the globalVariableList question.
+        
         /*if(parser.getGlobals().containsKey(variableName)) {
             Variable variable = (Variable) parser.getGlobals().get(variableName);
             if(variable.isValidValueType(rhs))*/

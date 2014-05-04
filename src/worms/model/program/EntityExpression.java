@@ -15,7 +15,7 @@ public abstract class EntityExpression implements Expression {
     public abstract Entity getResult();
     
     @Override
-    public Class getType() {
+    public Class<Entity> getType() {
         return Entity.class;
     }
 }

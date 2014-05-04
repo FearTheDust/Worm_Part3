@@ -28,22 +28,22 @@ public class AssignmentStatement implements Statement {
             return false;
         }
         
-        if (program.isFinished()) {
-            if (parser.getGlobals().containsKey(variableName)) {
-                Variable variable = (Variable) parser.getGlobals().get(variableName);
-                if (variable.isValidValueType(rhs)) {
-                    
-                    //TODO: Move the isFinished if in here so the error gets thrown even if it doesn't get "executed"?
+        if (parser.getGlobals().containsKey(variableName)) {
+            Variable variable = (Variable) parser.getGlobals().get(variableName);
+            if (variable.isValidValueType(rhs)) {
+                
+                if (program.isFinished()) {
                     variable.setValue(rhs.getResult());
-                    
-                } else {
-                    throw new IllegalStateException("The " + rhs.getResult() + " isn't a valid type for variable " + variableName);
+                    program.subtractFromCounter();
                 }
+                
             } else {
-                throw new IllegalStateException("The variable " + variableName + " isn't an existing variable anymore.");
+                throw new IllegalStateException("The " + rhs.getResult() + " isn't a valid type for variable " + variableName);
             }
-            program.subtractFromCounter();
+        } else {
+            throw new IllegalStateException("The variable " + variableName + " isn't an existing variable anymore.");
         }
+
         return true;
     }
 

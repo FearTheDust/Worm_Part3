@@ -44,8 +44,6 @@ public class Variable {
             this.value = value;
     }
     
-    // TODO create our own exceptions?
-    
     /**
      * Set the value of this variable to value.
      * The null value is only allowed when the type supports it. (see throws IllegalArgumentException)

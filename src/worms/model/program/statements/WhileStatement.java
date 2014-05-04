@@ -36,7 +36,7 @@ public class WhileStatement extends ConditionalStatement {
     public boolean perform(Program program) {
         /* Perform the statement, if we're searching for the last statement -> perform atleast once */
         boolean performedOnceFlag = false;
-        while ((!performedOnceFlag && !program.isFinished())|| condition.getResult()) {
+        while ((!performedOnceFlag && !program.isFinished()) || (condition.getResult() && program.isFinished())) {
            if(!body.execute(program))
                return false;
 

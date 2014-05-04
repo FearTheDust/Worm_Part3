@@ -15,7 +15,6 @@ import worms.util.Position;
  * @author Coosemans Brent
  */
 public interface Entity {
-    // TODO: Nog iets?
     
     /**
      * The position of this entity.

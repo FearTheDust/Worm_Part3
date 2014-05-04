@@ -12,7 +12,7 @@ public abstract class BooleanExpression implements Expression {
     public abstract Boolean getResult();
     
     @Override
-    public Class getType() {
+    public Class<Boolean> getType() {
         return Boolean.class;
     }
 }

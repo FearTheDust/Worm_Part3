@@ -10,6 +10,9 @@ import worms.model.Program;
  * When we're trying to find the last performed statement every conditionalStatement will have to make sure
  * that they check all of their statements and may therefor perform statements even when that wouldn't be the case with such condition state.
  * 
+ * ConditionalStatements should set program.getLastStatement() to "this" when a statement inside their body failed (return false) 
+ * and no other lastStatement has been set yet. (meaning not 'caught' by a while inside that body.)
+ * 
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */
@@ -21,13 +24,14 @@ public abstract class ConditionalStatement implements Statement {
      * Can change program.getLastStatement() && program.isFinished()
      * 
      * @param program
-     * @return Whether the execution was successful. (a.k.a. didn't found last statement here or executed all properly.)
+     * @return Whether the execution was successful. (a.k.a. didn't find last statement here or executed all properly.)
      */
     @Override
     public boolean execute(Program program) {
         /* Check for 1000 statements reached */
         if (program.getCounter() <= 0) {
-            program.setLastStatement(this);
+            if(program.getLastStatement() == null)
+                program.setLastStatement(this);
             return false;
         }
 
@@ -37,20 +41,21 @@ public abstract class ConditionalStatement implements Statement {
 
             //toggle back to finished if we found it.
             if (program.getLastStatement() == this && !program.isFinished()) {
-                program.toggleFinished();
+                program.setFinished(true);
+                program.setLastStatement(null);
             }
 
             //last statement we performed.
-            program.setLastStatement(this);
+            //program.setLastStatement(this);
         }
         
         /* Perform the statement's execution */
-        if(!this.perform(program))
+        if(!this.perform(program)) {
+            if(program.getLastStatement() == null)
+                program.setLastStatement(this);
+            
             return false;
-
-        /* If found, reset */
-        if (program.isFinished())
-            program.setLastStatement(null); //performed succesfully.
+        }
 
         return true;
     }

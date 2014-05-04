@@ -22,6 +22,8 @@ import worms.util.Position;
  * @author Derkinderen Vincent
  */
 public class Facade implements IFacade {
+    
+    //TODO: Test shoot without jumping ourselfs (they changed shoot with fire so might have changed something for us)
 
 	@Override
 	public boolean canTurn(Worm worm, double angle) {
@@ -130,7 +132,6 @@ public class Facade implements IFacade {
 		}
 	}
 	
-	//TODO: check Program fuctionality!!------------------------------------------
 	@Override
 	public void addNewWorm(World world, Program program) {
 		Position position = world.getRandomPassablePos(0.5);
@@ -348,11 +349,14 @@ public class Facade implements IFacade {
 		world.nextTurn();
 	}
 
-        //TODO Check, correct?
 	@Override
 	public Worm createWorm(World world, double x, double y, double direction,
 			double radius, String name, Program program) {
 		return new Worm(world, new Position(x,y), direction, radius, name, program);
+	}
+	
+	public Worm createWorm(World world, double x, double y, double direction, double radius, String name) {
+		return this.createWorm(world, x, y, direction, radius, name, null);
 	}
 
 	@Override
@@ -367,7 +371,7 @@ public class Facade implements IFacade {
                 parser.parse(programText);
                 
                 if(parser.getErrors().isEmpty()) {
-                    program = new Program(parser.getGlobals(), parser.getStatement()); //pass: statement, globals
+                    program = new Program(factory, parser.getGlobals(), parser.getStatement()); //pass: statement, globals
                     return ParseOutcome.success(program);
                 } else {
                     return ParseOutcome.failure(parser.getErrors());
@@ -376,14 +380,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean hasProgram(Worm worm) {
-		// TODO Auto-generated method stub
-		return false;
+		return worm.hasProgram();
 	}
 
 	@Override
 	public boolean isWellFormed(Program program) {
-		// TODO Auto-generated method stub
-		return false;
+		return program.isWellFormed();
 	}
 
 }

@@ -84,7 +84,7 @@ public class PartialFacadeTest {
 		World world = facade.createWorld(3.0, 4.0, new boolean[][] {
 				{ true, false, true }, { true, true, true },
 				{ true, true, true }, { false, false, false } }, random);
-		Worm worm = facade.createWorm(world, 1.5, 2.5, -Math.PI / 2, 0.5,
+		Worm worm = facade.createWorm(world, 1.5, 2.5, 3.0/2.0 * Math.PI, 0.5,
 				"Test", null);
 		assertFalse(facade.canFall(worm));
 		facade.move(worm);
@@ -110,5 +110,14 @@ public class PartialFacadeTest {
 		assertEquals(oldOrientation + 1.5, newOrientation, EPS);
 		assertTrue(worm != facade.getCurrentWorm(world)); // turn must end after executing program
 	}
+	
+	/*@Test
+	public void testProgram2() {
+		IActionHandler handler = new SimpleActionHandler(facade);
+		World world = facade.createWorld(100.0, 100.0, new boolean[][] { {true}, {false} }, random);
+		ParseOutcome<?> outcome = facade.parseProgram("double x; while (x < 1.5) {};", handler);
+		assertTrue(outcome.isSuccess());
+		Program program = ((Success)outcome).getResult();
+	}*/
 
 }

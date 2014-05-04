@@ -64,9 +64,6 @@ import worms.util.*;
  */
 
 public class Worm extends GameObject implements Entity {
-
-    
-        //TODO: Add Program in constructor (documentation + work)
     
 	/**
 	 * Initialize a new worm with a certain position, angle, radius, name,
@@ -79,6 +76,7 @@ public class Worm extends GameObject implements Entity {
 	 * @param name The name of the new worm.
 	 * @param actionPoints The amount of action points of the new worm.
 	 * @param hitPoints The amount of hit points of the new worm.
+     * @param program The program of the new worm.
 	 * 
 	 * @effect	This worm will be granted a provided position when valid.
 	 * 			| super(world, position)
@@ -98,10 +96,13 @@ public class Worm extends GameObject implements Entity {
 	 * 			| this.setCurrentHitPoints(hitPoints)
 	 * @effect This worm is added to the list of GameObjects in world.
 	 * 			| world.add(this)
+     * @throws IllegalArgumentException
+     *          When the program is not well formed.
+     *          | !program.isWellFormed()
 	 */
 	@Raw
 	public Worm(World world, Position position, double angle, double radius,
-			String name, int actionPoints, int hitPoints, Program program) {
+			String name, int actionPoints, int hitPoints, Program program) throws IllegalArgumentException {
 		super(world, position);
 		this.setAngle(angle);
 		this.setRadius(radius);
@@ -109,7 +110,11 @@ public class Worm extends GameObject implements Entity {
 		this.setCurrentActionPoints(actionPoints);
 		this.setCurrentHitPoints(hitPoints);
 
+                if(program != null && !program.isWellFormed())
+                    throw new IllegalArgumentException("The program is not well formed.");
+                
 		world.add(this);
+                this.program = program;
 
 		// Add & set weapons.
 		this.add(new Rifle(this));
@@ -126,7 +131,7 @@ public class Worm extends GameObject implements Entity {
 	 * @param angle The angle of the new worm.
 	 * @param radius The radius of the new worm.
 	 * @param name The name of the new worm.
-         * @param program The program of the new worm.
+     * @param program The program of the new worm.
 	 * 
 	 * @effect	A new worm will be initialized with a position, angle, radius, name, the maximum amount of action points possible for the new worm 
 	 * 				and the maximum amount of hit points possible for the new worm. As well as the program for the new worm.
@@ -138,10 +143,55 @@ public class Worm extends GameObject implements Entity {
 		this(world, position, angle, radius, name, Integer.MAX_VALUE,
 				Integer.MAX_VALUE, program);
 	}
+	
+	/**
+	 * Initialize a new worm with a certain position, angle, radius, name,
+	 * 	 a certain amount of action points, a certain amount of hit points and give him a set of weapons.
+	 * 
+	 * @param world The world of the new worm.
+	 * @param position The position of the new worm.
+	 * @param angle The angle of the new worm.
+	 * @param radius The radius of the new worm.
+	 * @param name The name of the new worm.
+	 * @param actionPoints The amount of action points of the new worm.
+	 * @param hitPoints The amount of hit points of the new worm.
+	 * 
+	 * @effect	A new worm will be initialized with a position, angle, radius, name, the maximum amount of action points possible for the new worm 
+	 * 				and the maximum amount of hit points possible for the new worm. The program will be null.
+	 * 			| this(world, position, angle, radius, name,name, actionPoints, hitPoints, null)
+	 */
+	@Raw
+	public Worm(World world, Position position, double angle, double radius,
+			String name, int actionPoints, int hitPoints) {
+		this(world, position, angle, radius, name, actionPoints,
+				hitPoints, null);
+	}
+	
+	/**
+	 * Initialize a new worm with a maximum amount of action points possible for this worm as well as the maximum amount of possible hit points for this worm.
+	 * 
+	 * @param world The world of the new worm.
+	 * @param position The position of the new worm.
+	 * @param angle The angle of the new worm.
+	 * @param radius The radius of the new worm.
+	 * @param name The name of the new worm.
+	 * 
+	 * @effect	A new worm will be initialized with a position, angle, radius, name, the maximum amount of action points possible for the new worm 
+	 * 				and the maximum amount of hit points possible for the new worm. The program will be null.
+	 * 			| this(world, position, angle, radius, name, Integer.MAX_VALUE, Integer.MAX_VALUE, null)
+	 */
+	@Raw
+	public Worm(World world, Position position, double angle, double radius,
+			String name) {
+		this(world, position, angle, radius, name, Integer.MAX_VALUE,
+				Integer.MAX_VALUE, null);
+	}
 
 	/**
 	 * This worm jumps to a certain position calculated by a formula.
 	 * 
+         * @param timeStep The step with which we increase the time every time.
+         * 
 	 * @post	The current amount of action points is 0.
 	 * 			| new.getCurrentActionPoints() == 0
 	 * 
@@ -243,7 +293,7 @@ public class Worm extends GameObject implements Entity {
 	/**
 	 * Returns the cost to move for this worm if this would be a legal position to move to.
 	 * 
-	 * @param The position to go to.
+	 * @param finalPosition The position to go to.
 	 * 
 	 * @return 	The cost to move.
 	 * 			| s = Math.atan((this.getPosition().getY() - finalPosition.getY()) / (this.getPosition().getX() - finalPosition.getX()));
@@ -259,7 +309,7 @@ public class Worm extends GameObject implements Entity {
 	/**
 	 * Returns the angle of this worm.
 	 */
-	@Basic
+	@Basic @Override
 	public double getAngle() {
 		return angle;
 	}
@@ -392,7 +442,7 @@ public class Worm extends GameObject implements Entity {
 	/**
 	 * Returns the mass of this worm.
 	 */
-	@Basic
+	@Basic @Override
 	public double getMass() {
 		return getDensity() * (4.0 / 3.0) * Math.PI * Math.pow(this.getRadius(), 3);
 	}
@@ -899,6 +949,7 @@ public class Worm extends GameObject implements Entity {
 	 * @return False if there is impassable terrain adjacent to this worm.
 	 * 			| result == !this.getWorld().isAdjacent(this.getPosition(), this.getRadius())
 	 */
+        @Override
 	public boolean canFall() {
 		if (this.getWorld() == null)
 			return false;
@@ -934,6 +985,7 @@ public class Worm extends GameObject implements Entity {
 	 * 			| new.getCurrentHitPoints() <= this.getCurrentHitPoints()
 	 * 
 	 */
+        @Override
 	public void fall() {
 		Position oldPosition = this.getPosition();
 		super.fall();
@@ -1052,13 +1104,37 @@ public class Worm extends GameObject implements Entity {
     }
     
     /**
-     * TODO: doc + ook hierboven
-     * @return 
+     * Returns a representation of this worm in String.
+     * Format: the name of the worm followed by its Action Points and its Hit Points.
+     * 
+     * @return == "Name: " + this.getName() + " ; AP: " + this.getCurrentActionPoints() + "/" + this.getMaximumActionPoints()
+     *           + " ; HP: " + this.getCurrentHitPoints() + "/" + this.getMaximumHitPoints()
      */
     @Override
     public String toString() {
         return ("Name: " + this.getName() + " ; AP: " + this.getCurrentActionPoints() + "/" + this.getMaximumActionPoints()
                 + " ; HP: " + this.getCurrentHitPoints() + "/" + this.getMaximumHitPoints());
     }
+    
+    /**
+     * Execute the program as defined by the Program.
+     * Does nothing when the program is a null reference.
+     * @effect program.execute();
+     */
+    public void executeProgram() {
+        if(program != null)
+            this.program.execute();
+    }
+    
+    /**
+     * Return whether this worm has got a program.
+     * @return True if the worm has a program else false.
+     */
+    @Basic
+    public boolean hasProgram() {
+        return this.program != null;
+    }
+    
+    private Program program;
 	
 }

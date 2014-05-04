@@ -37,6 +37,7 @@ public abstract class GameObject {
 	
 	/**
 	 * Returns the position of this GameObject.
+         * @return 
 	 */
 	@Basic @Raw
 	public Position getPosition() {
@@ -65,22 +66,23 @@ public abstract class GameObject {
 	/**
 	 * Returns whether the position is a valid position
 	 * 
+         * @param position The new position for the new GameObject.
+         * 
 	 * @return False when position == null
 	 * 			| if position == null
 	 * 			| then result == false
 	 */
 	public boolean isValidPosition(Position position) {
-		if(position == null)
-			return false;
-			
-		return true;
+		return position != null;
 	}
 	
 	private Position position;
 	
 	/**
 	 * Returns the world the worm is in.
+         * @return The world.
 	 */
+        @Basic
 	public World getWorld() {
 		return world;
 	}
@@ -90,16 +92,19 @@ public abstract class GameObject {
 	
 	/**
 	 * Return the mass of this GameObject.
+         * @return 
 	 */
 	public abstract double getMass();
 	
 	/**
 	 * Returns whether or not this GameObject is alive in the world it's in.
+         * @return 
 	 */
 	public abstract boolean isAlive();
 	
 	/**
 	 * Returns the radius of the GameObject
+         * @return 
 	 */
 	public abstract double getRadius();
 	

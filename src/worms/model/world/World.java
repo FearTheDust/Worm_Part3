@@ -414,7 +414,11 @@ public class World {
 			setActiveWorm(getNextWorm());
 			cleanDeadObjects(); // Important we do this after.
 			this.getActiveWorm().giveTurnPoints();
-		} 
+                        if(this.getActiveWorm().hasProgram()) {
+                            this.getActiveWorm().executeProgram();
+                            this.nextTurn();
+                        }
+		}
 	}
 
 	private Worm activeWorm;
@@ -902,4 +906,30 @@ public class World {
 		gameObject.removeWorld();
 	}
 
+     /**
+      * Searches the closest entity to a given position with a given angle.
+      * @param position The position to check from
+      * @param angle The direction to check in
+      * @return null if there is no entity in that direction,
+      *         else the entity in that direction closest to the given position
+      *         | result == null || 
+      *         | (angle = Math.atan((result.getPosition().getY() - position.getY()) / (result.getPosition().getX() - position.getX())) &&
+      *         | result.getPosition().distance(position) > 0)
+      */
+     public Entity searchObject(Position position, double angle) {
+        Entity shortestObject = null;
+        double distance = Double.POSITIVE_INFINITY;
+
+        for (GameObject gameObject : this.getGameObjects()) {
+            double searchAngle = Math.atan((gameObject.getPosition().getY() - position.getY()) / (gameObject.getPosition().getX() - position.getX()));
+            if (Util.fuzzyEquals(searchAngle, angle, 1E-8) && gameObject instanceof Entity) {
+                double tempDistance = gameObject.getPosition().distance(position);
+                if (tempDistance < distance && tempDistance > 0) {
+                    shortestObject = (Entity) gameObject;
+                    distance = tempDistance;
+                }
+            }
+        }
+        return shortestObject;
+    }
 }

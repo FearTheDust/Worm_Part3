@@ -11,7 +11,7 @@ public abstract class ActionStatement implements Statement {
     /**
      * Performs the action and returns whether it succeeded.
      * It can return false due reaching 0 (program.getCounter()) or if the performing of the action fails.
-     * Will only perform the actual action if program.isFinished(), a.k.a. if the last statement was alrdy found.
+     * Will only perform the actual action if program.isFinished(), a.k.a. if the last statement was already found.
      * 
      * @param program The program to execute on.
      * 
@@ -19,9 +19,8 @@ public abstract class ActionStatement implements Statement {
      */
     @Override
     public boolean execute(Program program) {
-        if (program.getCounter() <= 0) {
+        if (program.getCounter() <= 0)
             return false;
-        }
         
         /* Perform the action, before that, we subtract the statement from the counter */
         if(program.isFinished()) {
@@ -51,7 +50,4 @@ public abstract class ActionStatement implements Statement {
     public boolean hasActionStatement() {
         return true;
     }
-
-    //TODO: We will probabaly have to add stuff to check failure/succes etc..
-    //TODO: ANY ASSIGNMENT must check if a counter of 1000 is exceeded.
 }
