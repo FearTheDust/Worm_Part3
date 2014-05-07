@@ -2,6 +2,9 @@ package worms.model.program.statements;
 
 import worms.model.Program;
 import worms.model.program.BooleanExpression;
+import worms.model.program.Expression;
+import worms.model.program.Variable;
+import worms.model.program.VariableExpression;
 
 /**
  *
@@ -18,8 +21,17 @@ public class WhileStatement extends ConditionalStatement {
         this.condition = condition;
         this.body = body;
     }
+    
+    public WhileStatement(VariableExpression condition, Statement body) {
+        if (body == null || condition == null) {
+            throw new IllegalArgumentException("The body statements or the condition musn't be a null reference.");
+        }
 
-    private final BooleanExpression condition;
+        this.condition = condition;
+        this.body = body;
+    }
+
+    private final Expression condition;
     private final Statement body;
 
     /**
@@ -34,9 +46,13 @@ public class WhileStatement extends ConditionalStatement {
     
     @Override
     public boolean perform(Program program) {
+        if(condition.getType() != Boolean.class) {
+            throw new IllegalStateException("The condition of the if-statement is a variable with a type different of Boolean.class. Type: " + condition.getType() + "; value: " + condition.getResult() +";");
+        }
+               
         /* Perform the statement, if we're searching for the last statement -> perform atleast once */
         boolean performedOnceFlag = false;
-        while ((!performedOnceFlag && !program.isFinished()) || (condition.getResult() && program.isFinished())) {
+        while ((!performedOnceFlag && !program.isFinished()) || ((Boolean) condition.getResult() && program.isFinished())) {
            if(!body.execute(program))
                return false;
 

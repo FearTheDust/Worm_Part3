@@ -3,6 +3,7 @@ package worms.model.program;
 
 import worms.model.Entity;
 
+
 /**
  * Represents a variable with a certain name, type and value.
  * Values that have been set are always supported by their type.
@@ -12,36 +13,38 @@ import worms.model.Entity;
  * 
  * @author Derkinderen Vincent
  * @author Coosemans Brent
+ * @param <T> The type of this variable.
  */
-public class Variable {
+public class Variable<T> {
     
     /**
      * Initialize a variable with a certain type.
      * 
-     * @param type The type.
+     * @param dummy A class of the type. This will be used to verify expressions are assignable from this class type.
      * 
      * @effect this(type, null)
      */
-    public Variable(Class type) {
-        this(type, null);
+    public Variable(Class<T> dummy) {
+        this(dummy, null);
     }
     
     /**
      * Initialize a variable with a certain type and a value.
      * 
-     * @param type The type of the new variable.
+     * @param dummy A class of the type. This will be used to verify expressions are assignable from this class type.
      * @param value The value for the variable.
      * 
-     * @see If value != null this.setValue(value) since value has restrictions on its type.   
+     * @post new.getType() == classType
+     * 
+     * @effect this.setValue(value)   
      */
-    public Variable(Class type, Object value) throws IllegalArgumentException{    
-        if(type==null)
-            throw new IllegalArgumentException("The type can't be null.");
-        this.type = type;
+    public Variable(Class<T> dummy, T value) throws IllegalArgumentException{
+        if(dummy == null)
+            throw new IllegalArgumentException("The Class<T> dummy argument musn't be a null reference.");
+        
+        classType = dummy;
         if(value != null)
             this.setValue(value);
-        else
-            this.value = value;
     }
     
     /**
@@ -57,55 +60,52 @@ public class Variable {
      *          When value is a null reference and this.getType() isn't a subclass of Entity. 
      *          This would mean the type doesn't support a null reference according to us.
      */
-    public void setValue(Object value) throws IllegalArgumentException {
-        if(value instanceof Number)
-            value = ((Number) value).doubleValue();
-        
-        if(getType().isInstance(value) || (Entity.class.isAssignableFrom(getType()) && value == null))
+    public void setValue(T value) throws IllegalArgumentException {
+        if(this.isValidValueType(value))
             this.value = value;
         else
-            throw new IllegalArgumentException("The value has to be the same as the type of the variable.");
+            throw new IllegalArgumentException("isValidValueType(value) is false.");
     }
-    
-    /**
-     * The type of this variable as described at the declaration.
-     * @return The variable type.
-     */
-    public Class getType() {
-        return type;
-    }
-    
-    private final Class type;
     
     /**
      * The current value of this variable.
      * @return The current value.
      */
-    public Object getValue() {
+    public T getValue() {
         return this.value;
     }
     
-    private Object value;
+    private T value;
  
     /**
      * Whether the given value has a valid value type for this variable.
+     * Basically, if the value is null and the type is not assignable from Entity then it will return false.
+     * 
      * @param value The value to check.
      * @return Whether it is valid.
+     *          | result == (value != null || this.getType().isAssignableFrom(Entity.class))
      */
-    public boolean isValidValueType(Object value) {
-        if(value instanceof Number)
-            value = ((Number) value).doubleValue();
-        
-        return getType().isInstance(value) || (Entity.class.isAssignableFrom(getType()) && value == null);
+    public boolean isValidValueType(T value) {
+        return (value != null || this.getType().isAssignableFrom(Entity.class));
     }
     
     /**
      * Returns whether this expression is of a valid type for this variable.
      * @param expression The expression to check
      * @return Whether it is valid.
+     *          | result == expression.getType().isAssignableFrom(this.getType());
      */
     public boolean isValidValueType(Expression expression) {
-        return this.getType().isInstance(expression.getType());
+        return expression.getType().isAssignableFrom(this.getType());
+    }
+
+    /**
+     * The type of this variable as described in the constructor.
+     * @return The variable type.
+     */
+    public Class<T> getType() {
+        return this.classType;
     }
     
+    private final Class<T> classType;
 }

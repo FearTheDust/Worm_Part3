@@ -89,40 +89,46 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public BooleanExpression createAnd(int line, int column, final Expression e1, final Expression e2) {
-        if (!(e1 instanceof BooleanExpression) || !(e2 instanceof BooleanExpression))
-            throw new IllegalTypeException(line, column, "An &&-expression must consist of atleast 2 BooleanExpressions");
+    public BooleanExpression createAnd(final int line, final int column, final Expression e1, final Expression e2) {
+        if (!(e1 instanceof BooleanExpression || e1 instanceof VariableExpression) || !(e2 instanceof BooleanExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "An &&-expression must consist of atleast 2 BooleanExpressions or variables.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return ((BooleanExpression) e1).getResult() && ((BooleanExpression) e2).getResult();
+                if((e1 instanceof VariableExpression && e1.getType() != Boolean.class) || (e2 instanceof VariableExpression && e2.getType() != Boolean.class))
+                    throw new IllegalTypeException(line, column, " The &&-expression failed to execute since a variable used isn't of type Boolean.");
+                return (Boolean) e1.getResult() && (Boolean) e2.getResult();
             }
         };
     }
 
     @Override
-    public BooleanExpression createOr(int line, int column, final Expression e1, final Expression e2) {
-        if (!(e1 instanceof BooleanExpression) || !(e2 instanceof BooleanExpression))
-            throw new IllegalTypeException(line, column, "An ||-expression must consist of atleast 2 BooleanExpressions");
+    public BooleanExpression createOr(final int line, final int column, final Expression e1, final Expression e2) {
+      if (!(e1 instanceof BooleanExpression || e1 instanceof VariableExpression) || !(e2 instanceof BooleanExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "An ||-expression must consist of atleast 2 BooleanExpressions or variables.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return ((BooleanExpression) e1).getResult() || ((BooleanExpression) e2).getResult();
+                if((e1 instanceof VariableExpression && e1.getType() != Boolean.class) || (e2 instanceof VariableExpression && e2.getType() != Boolean.class))
+                    throw new IllegalTypeException(line, column, " The ||-expression failed to execute since a variable used isn't of type Boolean.");
+                return (Boolean) e1.getResult() || (Boolean) e2.getResult();
             }
         };
     }
 
     @Override
-    public BooleanExpression createNot(int line, int column, final Expression e) {
-        if (!(e instanceof BooleanExpression))
-            throw new IllegalTypeException(line, column, "The !-expression must consist of a BooleanExpression.");
-        
+    public BooleanExpression createNot(final int line, final int column, final Expression e) {
+        if (!(e instanceof BooleanExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "An !-expression must consist of a BooleanExpression or variable.");
+       
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return !((BooleanExpression) e).getResult();
+                if((e instanceof VariableExpression && e.getType() != Boolean.class))
+                    throw new IllegalTypeException(line, column, " The !-expression failed to execute since a variable used isn't of type Boolean.");
+                return !((Boolean) e.getResult());
             }
         };
     }
@@ -150,159 +156,184 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public DoubleExpression createGetX(int line, int column, final Expression e) {
-        if(!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public DoubleExpression createGetX(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getX()-expression variable isn't of type Entity.");
                 //can throw NullPointerException/NotSupported/.. when necessary :)
-                return ((EntityExpression) e).getResult().getPosition().getX();
+                return ((Entity) e.getResult()).getPosition().getX();
             }
         };
     }
 
     @Override
-    public DoubleExpression createGetY(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public DoubleExpression createGetY(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        
+        return new DoubleExpression() {
+            @Override
+            public Double getResult() {
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getY()-expression variable isn't of type Entity.");
+                return ((Entity) e.getResult()).getPosition().getY();
+            }
+        };
+    }
+
+    @Override
+    public DoubleExpression createGetRadius(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return ((EntityExpression) e).getResult().getPosition().getY();
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getRadius()-expression variable isn't of type Entity.");
+                return ((Entity) e.getResult()).getRadius();
             }
         };
     }
 
     @Override
-    public DoubleExpression createGetRadius(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public DoubleExpression createGetDir(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return ((EntityExpression) e).getResult().getRadius();
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getDir()-expression variable isn't of type Entity.");
+                return ((Entity) e.getResult()).getAngle();
             }
         };
     }
 
     @Override
-    public DoubleExpression createGetDir(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public DoubleExpression createGetAP(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return ((EntityExpression) e).getResult().getAngle();
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getAP()-expression variable isn't of type Entity.");
+                return ((Entity) e.getResult()).getAP();
             }
         };
     }
 
     @Override
-    public DoubleExpression createGetAP(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public DoubleExpression createGetMaxAP(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return ((EntityExpression) e).getResult().getAP();
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getMaxAP()-expression variable isn't of type Entity.");
+                return ((Entity) e.getResult()).getMaxAP();
             }
         };
     }
 
     @Override
-    public DoubleExpression createGetMaxAP(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public DoubleExpression createGetHP(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return ((EntityExpression) e).getResult().getMaxAP();
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getHP()-expression variable isn't of type Entity.");
+                return ((Entity) e.getResult()).getHP();
             }
         };
     }
 
     @Override
-    public DoubleExpression createGetHP(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public DoubleExpression createGetMaxHP(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return ((EntityExpression) e).getResult().getHP();
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The getMaxHP()-expression variable isn't of type Entity.");
+                return ((Entity) e.getResult()).getMaxHP();
             }
         };
     }
 
     @Override
-    public DoubleExpression createGetMaxHP(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
-
-        return new DoubleExpression() {
-            @Override
-            public Double getResult() {
-                return ((EntityExpression) e).getResult().getMaxHP();
-            }
-        };
-    }
-
-    @Override
-    public BooleanExpression createSameTeam(int line, int column, final Expression e) {
-        if(!(e instanceof EntityExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+    public BooleanExpression createSameTeam(final int line, final int column, final Expression e) {
+        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                    return getWorm().getTeam() == ((EntityExpression) e).getResult().getTeam();
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The sameTeam()-expression variable isn't of type Entity.");
+                return getWorm().getTeam() == ((Entity) e.getResult()).getTeam();
             }
         };
     }
 
     @Override
-    public EntityExpression createSearchObj(int line, int column, Expression e) {
-        if(!(e instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be a double.");
+    public EntityExpression createSearchObj(final int line, final int column, final Expression e) {
+        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The parameter must be a double or variable.");
+        
         return new EntityExpression() {
-
             @Override
             public Entity getResult() {
+                if(e instanceof VariableExpression && e.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "The searchObj()-expression variable isn't of type Double.");
+                
                 Worm worm = ProgramFactoryImpl.this.getWorm();
-                return worm.getWorld().searchObject(worm.getPosition(), worm.getAngle());
+                return worm.getWorld().searchObject(worm.getPosition(), worm.getAngle() + (double) e.getResult());
             }
         };
     }
 
     @Override
-    public BooleanExpression createIsWorm(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
+    public BooleanExpression createIsWorm(final int line, final int column, final Expression e) {
+        if (!(e instanceof EntityExpression || e instanceof VariableExpression))
             throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return ((EntityExpression) e).getResult() instanceof Worm;
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The isWorm-expression variable isn't of type Entity.");
+                return e.getResult() instanceof Worm;
             }
         };
     }
 
     @Override
-    public BooleanExpression createIsFood(int line, int column, final Expression e) {
-        if (!(e instanceof EntityExpression))
+    public BooleanExpression createIsFood(final int line, final int column, final Expression e) {
+        if (!(e instanceof EntityExpression || e instanceof VariableExpression))
             throw new IllegalTypeException(line, column, "The parameter must be an entity.");
 
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return ((EntityExpression) e).getResult() instanceof Food;
+                if(e instanceof VariableExpression && e.getType() != Entity.class)
+                    throw new IllegalTypeException(line, column, "The isFood-expression variable isn't of type Entity.");
+                return e.getResult() instanceof Food;
             }
         };
     }
@@ -310,113 +341,84 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     @Override
     public Expression createVariableAccess(final int line, final int column, final String name) {
         //Is complex because we cannot call getGlobals while parsing...
-        //TODO  problems with type (expression)
-        return new Expression() {
-            @Override
-            public Object getResult() {
-                final Variable variable = (Variable) getProgramParser().getGlobals().get("name");
-                if(variable == null)
-                    throw new IllegalArgException(line, column, name + " does not exist.");
-                
-                if(variable.getType() == Double.class) {
-                    return new DoubleExpression() {
-                        @Override
-                        public Double getResult() {
-                            return (Double) variable.getValue();
-                        }
-                        
-                    };
-                    
-                } else if(variable.getType() == Boolean.class) {
-                    return new BooleanExpression() {
-                        @Override
-                        public Boolean getResult() {
-                            return (Boolean) variable.getValue();
-                        }
-                        
-                    };
-                } else if(variable.getType().isAssignableFrom(Entity.class)) {
-                    return new EntityExpression() {
-                        @Override
-                        public Entity getResult() {
-                            return (Entity) variable.getValue();
-                        }
-                    };
-                }
-                return null;
-            }
-
-            @Override
-            public Class getType() {
-                Variable variable = (Variable) getProgramParser().getGlobals().get("name");
-                if (variable == null)
-                    throw new IllegalArgException(line, column, name + " does not exist.");
-                
-                return variable.getType();
-            }
-        };
+        //TODO  Change return new Expression to some type of Variable and change every 'instanceof VariableExpression' to that class.
+        return new VariableExpression(this.getProgramParser(), name, line, column);
     }
 
     @Override
-    public BooleanExpression createLessThan(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public BooleanExpression createLessThan(final int line, final int column, final Expression e1, final Expression e2) {
+        if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return ((DoubleExpression) e1).getResult()<((DoubleExpression) e2).getResult();
+                if((e1 instanceof VariableExpression && e1.getType() != Double.class) || (e2 instanceof VariableExpression && e2.getType() != Double.class))
+                    throw new IllegalTypeException(line, column, "A <-expression variable isn't of type Double");
+                return (Double) e1.getResult() < (Double) e2.getResult();
             }
         };
     }
 
     @Override
-    public BooleanExpression createGreaterThan(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public BooleanExpression createGreaterThan(final int line, final int column, final Expression e1, final Expression e2) {
+        if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return ((DoubleExpression) e1).getResult()>((DoubleExpression) e2).getResult();
+                //TODO: Get rid of the uncessary e1 instanceof VariableExpression down here (everywhere, same place) since getType covers it all
+                if((e1 instanceof VariableExpression && e1.getType() != Double.class) || (e2 instanceof VariableExpression && e2.getType() != Double.class))
+                    throw new IllegalTypeException(line, column, "A >-expression variable isn't of type Double");
+                return (Double) e1.getResult() > (Double) e2.getResult();
             }
         };
     }
+    
+    
 
     @Override
-    public BooleanExpression createLessThanOrEqualTo(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public BooleanExpression createLessThanOrEqualTo(final int line, final int column, final Expression e1, final Expression e2) {
+       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return (Util.fuzzyLessThanOrEqualTo(((DoubleExpression) e1).getResult(),((DoubleExpression) e2).getResult()));
+                if(e1.getType() != Double.class || e2.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "A <=-expression variable isn't of type Double");
+                return (Util.fuzzyLessThanOrEqualTo((Double) e1.getResult(), (Double) e2.getResult()));
             }
         };
     }
 
     @Override
-    public BooleanExpression createGreaterThanOrEqualTo(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public BooleanExpression createGreaterThanOrEqualTo(final int line, final int column, final Expression e1, final Expression e2) {
+       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return (Util.fuzzyGreaterThanOrEqualTo(((DoubleExpression) e1).getResult(),((DoubleExpression) e2).getResult()));
+                if(e1.getType() != Double.class || e2.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "A >=-expression variable isn't of type Double");
+                return (Util.fuzzyGreaterThanOrEqualTo((Double) e1.getResult(), (Double) e2.getResult()));
             }
         };
     }
 
     @Override
-    public BooleanExpression createEquality(int line, int column, final Expression e1, final Expression e2) {
-        if(!e1.getClass().isInstance(e2) && !e2.getClass().isInstance(e1))
+    public BooleanExpression createEquality(final int line, final int column, final Expression e1, final Expression e2) {
+        if(!(e1 instanceof VariableExpression) && !(e2 instanceof VariableExpression) && (e1.getType() != e2.getType()))
             throw new IllegalTypeException(line, column, "Both expressions must have the same type.");
+        
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                return (e1.getResult()==e2.getResult());
+                if(e1.getType() != e2.getType())
+                    throw new IllegalTypeException(line, column, "An equality/inequality demands 2 expressions of the same type.");
+                return (e1.getResult() == e2.getResult());
             }
         };
     }
@@ -427,106 +429,123 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public DoubleExpression createAdd(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public DoubleExpression createAdd(final int line, final int column, final Expression e1, final Expression e2) {
+       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return (((DoubleExpression) e1).getResult()+((DoubleExpression) e2).getResult());
+                if(e1.getType() != Double.class || e2.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
+                return ((double) e1.getResult()) + ((double) e2.getResult());
             }
         };
     }
 
     @Override
-    public DoubleExpression createSubtraction(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public DoubleExpression createSubtraction(final int line, final int column, final Expression e1, final Expression e2) {
+       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return (((DoubleExpression) e1).getResult()-((DoubleExpression) e2).getResult());
+                if(e1.getType() != Double.class || e2.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
+                return ((double) e1.getResult()) - ((double) e2.getResult());
             }
         };
     }
 
     @Override
-    public DoubleExpression createMul(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public DoubleExpression createMul(final int line, final int column, final Expression e1, final Expression e2) {
+       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return (((DoubleExpression) e1).getResult()*((DoubleExpression) e2).getResult());
+                if(e1.getType() != Double.class || e2.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
+                return ((double) e1.getResult()) * ((double) e2.getResult());
             }
         };
     }
 
     @Override
-    public DoubleExpression createDivision(int line, int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression) || !(e2 instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression.");
+    public DoubleExpression createDivision(final int line, final int column, final Expression e1, final Expression e2) {
+       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
         
         // Division by zero will automatically throw an exception so we don't have to do it manually.
+       //TODO: Add manual exceptions for illegal division (infinity; 0) because we can give more accurate (line, column) exception info.
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return (((DoubleExpression) e1).getResult()/((DoubleExpression) e2).getResult());
+                if(e1.getType() != Double.class || e2.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
+                return ((double) e1.getResult()) / ((double) e2.getResult());
             }
         };
     }
 
     @Override
-    public DoubleExpression createSqrt(int line, int column, final Expression e) {
-        if(!(e instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
+    public DoubleExpression createSqrt(final int line, final int column, final Expression e) {
+        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return Math.sqrt(((DoubleExpression) e).getResult());
+                if(e.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
+                return Math.sqrt((Double) e.getResult());
             }
         };
     }
 
     @Override
-    public DoubleExpression createSin(int line, int column, final Expression e) {
-        if(!(e instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
+    public DoubleExpression createSin(final int line, final int column, final Expression e) {
+        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return Math.sin(((DoubleExpression) e).getResult());
+                if(e.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
+                return Math.sin((Double) e.getResult());
             }
         };
     }
 
     @Override
-    public DoubleExpression createCos(int line, int column, final Expression e) {
-        if(!(e instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
+    public DoubleExpression createCos(final int line, final int column, final Expression e) {
+        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                return Math.cos(((DoubleExpression) e).getResult());
+                if(e.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
+                return Math.cos((Double) e.getResult());
             }
         };
     }
 
     @Override
-    public Statement createTurn(int line, int column, final Expression angle) {
-        if (!(angle instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
+    public Statement createTurn(final int line, final int column, final Expression angle) {
+        if (!(angle instanceof DoubleExpression || angle instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The argument must be a variable or a doubleExpression.");
 
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
-                return handler.turn(worm, ((DoubleExpression) angle).getResult());
+                if(angle.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
+                return handler.turn(ProgramFactoryImpl.this.getWorm(), (Double) angle.getResult());
             }
         };
     }
@@ -536,7 +555,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
-                return handler.move(worm);
+                return handler.move(ProgramFactoryImpl.this.getWorm());
             }
         };
     }
@@ -546,7 +565,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
-                return handler.jump(worm);
+                return handler.jump(ProgramFactoryImpl.this.getWorm());
             }
         };
     }
@@ -556,20 +575,22 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
-                return handler.toggleWeapon(worm);
+                return handler.toggleWeapon(ProgramFactoryImpl.this.getWorm());
             }
         };
     }
 
     @Override
-    public Statement createFire(int line, int column, final Expression yield) {
-        if (!(yield instanceof DoubleExpression))
-            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression.");
+    public Statement createFire(final int line, final int column, final Expression yield) {
+        if (!(yield instanceof DoubleExpression || yield instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression or a variable.");
 
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
-                return handler.fire(worm, (int) ((double) ((DoubleExpression) yield).getResult()));
+                if(yield.getType() != Double.class)
+                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
+                return handler.fire(ProgramFactoryImpl.this.getWorm(), (int) ((double) yield.getResult()));
             }
         };
     }
@@ -586,9 +607,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public AssignmentStatement createAssignment(int line, int column, String variableName, Expression rhs) {
-        //We cannot check for this error before executing the program since we don't have any acces to the globalList before the parser is done parsing.
-        //:(
-        //TODO Part of the globalVariableList question.
+        //We cannot check for this error before executing the program since 
+        //we don't have any acces to the globalList before the parser is done parsing.
         
         /*if(parser.getGlobals().containsKey(variableName)) {
             Variable variable = (Variable) parser.getGlobals().get(variableName);
@@ -603,31 +623,40 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public IfStatement createIf(int line, int column, Expression condition, Statement then, Statement otherwise) {
-        if(!(condition instanceof BooleanExpression))
-            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression.");
+        if(!(condition instanceof BooleanExpression || condition instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression or variable.");
+        
         try {
-            return new IfStatement((BooleanExpression) condition, then, otherwise);
+            if(condition instanceof BooleanExpression)
+                return new IfStatement((BooleanExpression) condition, then, otherwise);
+            if(condition instanceof BooleanExpression)
+                return new IfStatement((VariableExpression) condition, then, otherwise);
         } catch(IllegalArgumentException ex) {
             throw new IllegalTypeException(line, column, ex.getMessage());
         }
+        return null;
     }
 
     @Override
     public WhileStatement createWhile(int line, int column, Expression condition, Statement body) {
-        if(!(condition instanceof BooleanExpression))
-            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression.");
+        if(!(condition instanceof BooleanExpression || condition instanceof VariableExpression))
+            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression or variable.");
         
         try {
-            return new WhileStatement((BooleanExpression) condition, body);
+            if(condition instanceof BooleanExpression)
+                return new WhileStatement((BooleanExpression) condition, body);
+            if(condition instanceof VariableExpression)
+                return new WhileStatement((VariableExpression) condition, body);
         } catch(IllegalArgumentException ex) {
             throw new IllegalTypeException(line, column, ex.getMessage());
         }
+        return null;
     }
 
     @Override
     public Statement createForeach(int line, int column, ForeachType type, String variableName, Statement body) {
         try {
-            return new ForEachStatement(this, type, variableName, this.getProgramParser(), body);
+            return new ForEachStatement(this, type, variableName, body);
         } catch(IllegalArgumentException ex) {
             throw new IllegalArgException(line, column, ex.getMessage());
         }
@@ -644,18 +673,18 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Variable createDoubleType() {
-        return new Variable(Double.class);
+    public Variable<Double> createDoubleType() {
+        return new Variable<>(Double.class);
     }
 
     @Override
-    public Variable createBooleanType() {
-        return new Variable(Boolean.class);
+    public Variable<Boolean> createBooleanType() {
+        return new Variable<>(Boolean.class);
     }
 
     @Override
-    public Variable createEntityType() {
-        return new Variable(Entity.class);
+    public Variable<Entity> createEntityType() {
+        return new Variable<>(Entity.class);
     }
 
     @Override

@@ -3,6 +3,9 @@ package worms.model.program.statements;
 
 import worms.model.Program;
 import worms.model.program.BooleanExpression;
+import worms.model.program.Expression;
+import worms.model.program.Variable;
+import worms.model.program.VariableExpression;
 
 /**
  * If statement (condition, then, else)
@@ -29,7 +32,24 @@ public class IfStatement extends ConditionalStatement {
         this.otherwiseStatement = otherwise;
     }
     
-    private final BooleanExpression condition;
+    /**
+     * Initialize an If-Statement.
+     * @param condition The condition of the If.
+     * @param then The statement to execute if the condition is true
+     * @param otherwise The statement to execute if the condition is false.
+     * @throws IllegalArgumentException
+     *          When at least one of the statements or the condition is a null reference.
+     */
+    public IfStatement(VariableExpression condition, Statement then, Statement otherwise) throws IllegalArgumentException {
+        if(then == null || otherwise == null || condition == null)
+            throw new IllegalArgumentException("The if/else statements or the condition musn't be a null reference.");
+        
+        this.condition = condition;
+        this.thenStatement = then;
+        this.otherwiseStatement = otherwise;
+    }
+    
+    private final Expression condition;
     private final Statement thenStatement;
     private final Statement otherwiseStatement;
 
@@ -48,12 +68,20 @@ public class IfStatement extends ConditionalStatement {
      * 
      * @param program The program where we perform this on.
      * @return Whether performing the statements worked out well or failed.
+     * 
+     * @throws IllegalStateException
+     *          When the type of the condition isn't a Boolean.
+     *          | condition.getType() != Boolean.class  //Can only be possible for variables.
      */
     @Override
-    public boolean perform(Program program) {
+    public boolean perform(Program program) throws IllegalStateException {
+        if(condition.getType() != Boolean.class) {
+            throw new IllegalStateException("The condition of the if-statement is a variable with a type different of Boolean.class. Type: " + condition.getType() + "; value: " + condition.getResult() +";");
+        }
+        
         /* Perform the statement, if we're searching for the last statement -> perform both if necessary */
         if(program.isFinished()) { //We're executing like usual
-            if(condition.getResult()) {
+            if((Boolean) condition.getResult()) {
                 if(!thenStatement.execute(program))
                     return false;
             } else {

@@ -13,13 +13,14 @@ public class Program {
     //POSSIBLE
     //TODO: We could add clone functions to Statements so we could clone them.
     //So if a statement has conditions on it we could clone the input so when executing the reference couldn't have been changed from the outside.
+    //TODO Variable should start with default value
+    //TODO Variable implements Expression + all instanceof Expression replace by getType??
     
     //TODO (vraag) multiple error throwing.    
     //TODO !! (vraag) How to retrieve the global variables DURING parsing to know which type of variable we're dealing with to know which type of expression we're dealing with.
     //- (we could add a reference to the WormsParseMyListener in ProgramParser & if parser.getGlobals() == null check
     //- We could create/maintain our own list of variables.
     //TODO: (vraag) Best to put a generic T in Program or just use the Variable everywhere?
-    //TODO (vraag) Generic classes better?
     
     /**
      * Create a program with certain variables and a main statement.

@@ -31,12 +31,10 @@ public class AssignmentStatement implements Statement {
         if (parser.getGlobals().containsKey(variableName)) {
             Variable variable = (Variable) parser.getGlobals().get(variableName);
             if (variable.isValidValueType(rhs)) {
-                
                 if (program.isFinished()) {
                     variable.setValue(rhs.getResult());
                     program.subtractFromCounter();
-                }
-                
+                }             
             } else {
                 throw new IllegalStateException("The " + rhs.getResult() + " isn't a valid type for variable " + variableName);
             }
@@ -46,19 +44,6 @@ public class AssignmentStatement implements Statement {
 
         return true;
     }
-
-    /*public void perform() throws IllegalStateException {
-        if (parser.getGlobals().containsKey(variableName)) {
-            Variable variable = (Variable) parser.getGlobals().get(variableName);
-            if (variable.isValidValueType(rhs)) {
-                variable.setValue(rhs.getResult());
-            } else {
-                throw new IllegalStateException("The " + rhs.getResult() + " isn't a valid type for variable " + variableName);
-            }
-        } else {
-            throw new IllegalStateException("The variable " + variableName + " isn't an existing variable anymore.");
-        }
-    }*/
 
     /**
      * Returns false.

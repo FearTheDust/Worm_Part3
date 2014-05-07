@@ -6,13 +6,13 @@ package worms.model.program;
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */
-public abstract class DoubleExpression implements Expression {
+public abstract class DoubleExpression implements Expression<Double> {
     
     @Override
     public abstract Double getResult();
  
     @Override
-    public Class<Double> getType() {
+    public final Class<Double> getType() {
         return Double.class;
     }
 }

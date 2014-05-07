@@ -6,19 +6,21 @@ package worms.model.program;
  * 
  * @author Derkinderen Vincent
  * @author Coosemans Brent
+ * 
+ * @param <T> The type of the value the expression holds.
  */
-public interface Expression {
+public interface Expression<T> {
     
     /**
      * The result of this expression.
      * @return The result.
      */
-    public Object getResult();
+    public T getResult();
     
     /**
      * The type of the expression.
      * @return The type.
      */
-    public Class<?> getType();
+    public Class<T> getType();
     
 }
