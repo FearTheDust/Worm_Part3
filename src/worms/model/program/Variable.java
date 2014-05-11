@@ -7,7 +7,9 @@ import worms.model.Entity;
 /**
  * Represents a variable with a certain name, type and value.
  * Values that have been set are always supported by their type.
- * If no value is set yet the default value is applied, which is null. 
+ * 
+ * ! If no value is set yet the default value is applied, which is null.  !
+ * 
  * This implies that when a value is null and the type does not support null (double, boolean)
  * no assignment was given besides the declaration without value. (e.g bool x;)
  * 

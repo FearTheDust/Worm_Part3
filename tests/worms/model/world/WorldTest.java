@@ -701,7 +701,7 @@ public class WorldTest {
                 Worm worm2 = facade.createWorm(world, 0.6, 2, 0, 0.5, "Test2");
                 Worm worm3 = facade.createWorm(world, 0.7, 2, 0, 0.5, "Test3");
                 
-                Entity obj = world.searchObject(worm.getPosition(), worm.getAngle());
+                Entity obj = world.searchObject(worm.getPosition(), worm.getAngle()+0);
                 
                 assertTrue(worm2 == obj);
         }

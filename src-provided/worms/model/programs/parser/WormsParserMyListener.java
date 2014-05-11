@@ -88,7 +88,7 @@ public class WormsParserMyListener<E, S, T> implements WormsParserListener {
 			if (statements == null) {
 				statements = StatementOfEval(eval.eval());
 			} else {
-				java.util.List<S> l = new java.util.ArrayList<>();
+				java.util.List<S> l = new java.util.ArrayList<S>();
 				l.add(statements);
 				l.add(StatementOfEval(eval.eval()));
 				statements = factory.createSequence(line, column, l);
@@ -135,6 +135,9 @@ public class WormsParserMyListener<E, S, T> implements WormsParserListener {
 		if (action.TURN() != null) {
 			E e = ExpressionOfExpr(action.expr());
 			return (factory.createTurn(line, column, e));
+		}
+		if (action.MOVE() != null) {
+			return factory.createMove(line, column);
 		}
 
 		assert (false);
@@ -430,8 +433,14 @@ public class WormsParserMyListener<E, S, T> implements WormsParserListener {
 				return (ExpressionOfNumber(expr.NUMBER()));
 			}
 			if (expr.IDENTIFIER() != null) {
-				return (factory.createVariableAccess(line, column, expr
-						.IDENTIFIER().getText()));
+				String varName =  expr
+						.IDENTIFIER().getText();
+				T type = globals.get(varName);
+				E varExpr = factory.createVariableAccess(line, column, varName, type);
+				if (varExpr == null) {
+					varExpr = factory.createVariableAccess(line, column, varName);
+				}
+				return varExpr;
 			}
 			if (expr.unop() != null) {
 				return (ExpressionOfUnop(expr.unop()));
@@ -463,13 +472,13 @@ public class WormsParserMyListener<E, S, T> implements WormsParserListener {
 	// implementations of method bodies below.
 	// ------------------------------------------------------------------------
 
-    public Map<String, T> getGlobals() {
-        if (globals == null) {
-            return Collections.emptyMap();
-        } else {
-            return globals;
-        }
-    }
+	public Map<String, T> getGlobals() {
+		if (globals == null) {
+			return Collections.emptyMap();
+		} else {
+			return globals;
+		}
+	}
 
 	public S getStatement() {
 		if (statement == null) {

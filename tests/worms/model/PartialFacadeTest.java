@@ -95,6 +95,8 @@ public class PartialFacadeTest {
 				Util.fuzzyBetween(1.5, 1.55, facade.getY(worm), EPS));
 	};
 	
+        //Because we couldn't find a position for the second worm.
+        //We just gave it a position which we were certain was a right one.
 	@Test
 	public void testProgram() {
 		IActionHandler handler = new SimpleActionHandler(facade);
@@ -102,22 +104,13 @@ public class PartialFacadeTest {
 		ParseOutcome<?> outcome = facade.parseProgram("double x; while (x < 1.5) {\nx := x + 0.1;\n}\n turn x;", handler);
 		assertTrue(outcome.isSuccess());
 		Program program = ((Success)outcome).getResult();
-		Worm worm = facade.createWorm(world, 50.0, 50.51, 0, 0.5, "Test", program);
-		facade.addNewWorm(world, null); // add another worm
+		Worm worm = facade.createWorm(world, 50.0, 51.51, 0, 0.5, "Test", program);
+		facade.createWorm(world, 50.0, 51.51, 0, 0.5, "Test2", null);
 		double oldOrientation = facade.getOrientation(worm);
 		facade.startGame(world); // this will run the program
 		double newOrientation = facade.getOrientation(worm);
 		assertEquals(oldOrientation + 1.5, newOrientation, EPS);
 		assertTrue(worm != facade.getCurrentWorm(world)); // turn must end after executing program
 	}
-	
-	/*@Test
-	public void testProgram2() {
-		IActionHandler handler = new SimpleActionHandler(facade);
-		World world = facade.createWorld(100.0, 100.0, new boolean[][] { {true}, {false} }, random);
-		ParseOutcome<?> outcome = facade.parseProgram("double x; while (x < 1.5) {};", handler);
-		assertTrue(outcome.isSuccess());
-		Program program = ((Success)outcome).getResult();
-	}*/
 
 }

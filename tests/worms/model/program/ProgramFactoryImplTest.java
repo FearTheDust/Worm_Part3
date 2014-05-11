@@ -10,7 +10,8 @@ import worms.model.programs.ProgramParser;
 
 /**
  *
- * @author Admin
+ * @author Coosemans Brent
+ * @author Derkinderen Vincent
  */
 public class ProgramFactoryImplTest {
     
@@ -29,7 +30,7 @@ public class ProgramFactoryImplTest {
     static ProgramFactoryImpl factory;
 
     /**
-     * Proofs us if an Object of a certain type A is a null reference it still isn't an instanceof A.
+     * Proofs us if an Object of a certain type A is a null reference it still isn't an instance of A.
      */
     @Test
     public void testProofNull_NotInstance() {

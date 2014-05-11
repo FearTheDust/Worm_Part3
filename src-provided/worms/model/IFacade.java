@@ -2,7 +2,6 @@ package worms.model;
 
 import java.util.Collection;
 import java.util.Random;
-
 import worms.gui.game.IActionHandler;
 import worms.model.programs.ParseOutcome;
 import worms.model.world.World;

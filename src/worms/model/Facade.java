@@ -22,8 +22,6 @@ import worms.util.Position;
  * @author Derkinderen Vincent
  */
 public class Facade implements IFacade {
-    
-    //TODO: Test shoot without jumping ourselfs (they changed shoot with fire so might have changed something for us)
 
 	@Override
 	public boolean canTurn(Worm worm, double angle) {
@@ -362,20 +360,7 @@ public class Facade implements IFacade {
 	@Override
 	public ParseOutcome<?> parseProgram(String programText,
 			IActionHandler handler) {
-            
-		ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
-                ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
-                factory.setProgramParser(parser); //NullPointerException
-                Program program;
-                
-                parser.parse(programText);
-                
-                if(parser.getErrors().isEmpty()) {
-                    program = new Program(factory, parser.getGlobals(), parser.getStatement()); //pass: statement, globals
-                    return ParseOutcome.success(program);
-                } else {
-                    return ParseOutcome.failure(parser.getErrors());
-                }
+            return Program.parseProgram(programText,handler);
 	}
 
 	@Override
@@ -385,7 +370,10 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isWellFormed(Program program) {
-		return program.isWellFormed();
+            if(program == null)
+                return true;
+            
+            return program.isWellFormed();
 	}
 
 }

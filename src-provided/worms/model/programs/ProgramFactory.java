@@ -1,7 +1,6 @@
 package worms.model.programs;
 
 import java.util.List;
-import worms.model.world.entity.Worm;
 
 /**
  * A factory for creating expressions, statements and types.
@@ -174,6 +173,24 @@ public interface ProgramFactory<E, S, T> {
 	 * given name
 	 */
 	public E createVariableAccess(int line, int column, String name);
+	
+	/**
+	 * OPTIONAL METHOD
+	 * This method is only relevant for students that choose to work on static type checking.
+	 * You may ignore this method if you want,
+	 * and only implement the version of this method without the type argument. 
+	 * - If you do not use this method, return null.
+	 * - Otherwise, return null from the other createVariableAccess method.
+	 *  
+	 * Create an expression that evaluates to the value of the variable with the
+	 * given name.
+	 * 
+	 * The given type is the type of the variable with the given name,
+	 * as determined while parsing the variable declarations in the program.
+	 * 
+	 * If the variable with the given name was not declared, the given type is null.  
+	 */
+	public E createVariableAccess(int line, int column, String name, T type);
 
 	/**
 	 * Create an expression that checks whether the value of expression e1 is
@@ -237,19 +254,19 @@ public interface ProgramFactory<E, S, T> {
 
 	/**
 	 * Create an expression that represents the square root of the value of
-	 * expression e
+	 * expression e1 and the value of the expression e2
 	 */
 	public E createSqrt(int line, int column, E e);
 
 	/**
 	 * Create an expression that represents the sine of the value of expression
-	 * e
+	 * e1 and the value of the expression e2
 	 */
 	public E createSin(int line, int column, E e);
 
 	/**
 	 * Create an expression that represents the cosine of the value of
-	 * expression e
+	 * expression e1 and the value of the expression e2
 	 */
 	public E createCos(int line, int column, E e);
 
@@ -352,6 +369,4 @@ public interface ProgramFactory<E, S, T> {
 	 * declared type 'entity'.
 	 */
 	public T createEntityType();
-        
-        public Worm getWorm();
 }

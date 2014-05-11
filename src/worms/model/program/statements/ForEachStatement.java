@@ -35,8 +35,10 @@ public class ForEachStatement extends ConditionalStatement {
      *          | !isValidArgument(factory, type, variableName, body) || factory.getProgramParser() == null
      */
     public ForEachStatement(ProgramFactoryImpl factory, ProgramFactory.ForeachType type, String variableName, Statement body) throws IllegalArgumentException {
-        if (!isValidArgument(factory, type, variableName, body)) {
-            throw new IllegalArgumentException("The body statement contains an action statement or the variable doesn't exist.");
+        if(body.hasActionStatement())
+            throw new IllegalArgumentException("The body statement contains an action statement");
+        if (containsNullReference(factory, type, variableName, body)) {
+            throw new IllegalArgumentException("a null reference was passed.");
         }
         
         if(factory.getProgramParser() == null)
@@ -54,23 +56,17 @@ public class ForEachStatement extends ConditionalStatement {
     private final Statement body;
 
     /**
-     * Checks whether the given arguments are valid arguments to construct a for
-     * each loop with. Checks if any reference is null. Checks for the existence
-     * of action statement in the body.
+     *  Checks if any reference is null. 
      *
      * @param factory The factory which created this.
      * @param type The type to iterate over.
      * @param variableName The variable's name we change
      * @param body The body we execute.
      *
-     * @return Whether it is valid.
+     * @return Whether it contains a null reference.
      */
-    public static boolean isValidArgument(ProgramFactory factory, ForeachType type, String variableName, Statement body) {
-        if (factory == null || type == null || variableName == null || body == null) {
-            return false;
-        }
-
-        return !body.hasActionStatement();
+    public static boolean containsNullReference(ProgramFactory factory, ForeachType type, String variableName, Statement body) {
+        return (factory == null || type == null || variableName == null || body == null);
     }
 
     /**
@@ -106,7 +102,7 @@ public class ForEachStatement extends ConditionalStatement {
                 collection = factory.getWorm().getWorld().getFood();
                 break;
             case ANY:
-                collection = factory.getWorm().getWorld().getGameObjects();
+                collection = factory.getWorm().getWorld().getEntities();
                 break;
             default:
                 throw new IllegalStateException("No valid type was found.");

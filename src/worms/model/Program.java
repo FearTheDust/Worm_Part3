@@ -1,26 +1,23 @@
 package worms.model;
 
 import java.util.Map;
+import worms.gui.game.IActionHandler;
+import worms.model.program.Expression;
+import worms.model.program.ProgramFactoryImpl;
 import worms.model.program.Variable;
 import worms.model.program.statements.ConditionalStatement;
 import worms.model.program.statements.Statement;
-import worms.model.programs.ProgramFactory;
+import worms.model.programs.ParseOutcome;
+import worms.model.programs.ProgramParser;
+import worms.model.world.entity.Worm;
 
 public class Program {
 
     public static final int MAX_STATEMENT_AMOUNT = 1000;
 
-    //POSSIBLE
-    //TODO: We could add clone functions to Statements so we could clone them.
-    //So if a statement has conditions on it we could clone the input so when executing the reference couldn't have been changed from the outside.
-    //TODO Variable should start with default value
-    //TODO Variable implements Expression + all instanceof Expression replace by getType??
-    
-    //TODO (vraag) multiple error throwing.    
-    //TODO !! (vraag) How to retrieve the global variables DURING parsing to know which type of variable we're dealing with to know which type of expression we're dealing with.
-    //- (we could add a reference to the WormsParseMyListener in ProgramParser & if parser.getGlobals() == null check
-    //- We could create/maintain our own list of variables.
-    //TODO: (vraag) Best to put a generic T in Program or just use the Variable everywhere?
+    //TODO (vraag) multiple error throwing.
+    //TODO (vraag) 1.8.3 types Potential overflows in double to integer conversion shall be handler in a total manner.
+    // there is no double to integer conversion
     
     /**
      * Create a program with certain variables and a main statement.
@@ -34,15 +31,16 @@ public class Program {
      *          | globalMap == null || mainStatement == null || factory == null
      * 
      */
-    public Program(ProgramFactory factory, Map<String, Variable> globalMap, Statement mainStatement) throws IllegalArgumentException {
+    public Program(ProgramFactoryImpl factory, Map<String, Variable> globalMap, Statement mainStatement) throws IllegalArgumentException {
         if(globalMap == null || mainStatement == null || factory == null)
             throw new IllegalArgumentException("globalMap,mainStatement and factory musn't be a null reference.");
         
         this.globalMap = globalMap;
         this.mainStatement = mainStatement;
+        this.factory = factory;
     }
     
-    private ProgramFactory factory;
+    private ProgramFactoryImpl factory;
 
     /**
      * The Map of global variables. <String name, Variable variable>
@@ -63,8 +61,10 @@ public class Program {
      *          When the factory hasn't got a worm or the worm's world is a null reference.
      */
     public void execute() throws IllegalStateException {
-        if(this.factory.getWorm() == null || this.factory.getWorm().getWorld() == null)
-            throw new IllegalStateException("The factory hasn't got a worm or the factory's worm hasn't got a world.");
+        if(this.factory.getWorm() == null)
+            throw new IllegalStateException("The factory hasn't got a worm set.");
+        if(this.factory.getWorm().getWorld() == null)
+            throw new IllegalStateException("The factory's worm hasn't got a world set.");
             
         counter = MAX_STATEMENT_AMOUNT;
         if(mainStatement.execute(this)) {
@@ -159,5 +159,33 @@ public class Program {
         //Always true since we do not allow ForEachLoops with Action Statements (in ForEach constructor).
         return true;
     }
+    
+    
+    /**
+     * Set the worm associated with this program.
+     * @param worm
+     * @effect this.factory.setWorm(worm)
+     */
+    public void setWorm(Worm worm) {
+        this.factory.setWorm(worm);
+    }
 
+    public static ParseOutcome<?> parseProgram(String programText,
+			IActionHandler handler) {
+            
+		ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
+                ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
+                factory.setProgramParser(parser); //NullPointerException
+                Program program;
+                
+                parser.parse(programText);
+                
+                if(parser.getErrors().isEmpty()) {
+                    program = new Program(factory, parser.getGlobals(), parser.getStatement()); //pass: statement, globals
+                    return ParseOutcome.success(program);
+                } else {
+                    return ParseOutcome.failure(parser.getErrors());
+                }
+	}
+    
 }

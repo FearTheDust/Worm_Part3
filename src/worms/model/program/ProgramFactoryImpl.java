@@ -43,14 +43,15 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
      * @throws IllegalArgumentException
      *          When the parser isn't using this factory.
      */
-    public void setProgramParser(ProgramParser parser) throws IllegalArgumentException {
+    public void setProgramParser(ProgramParser<Expression, Statement, Variable> parser) throws IllegalArgumentException {
         if(parser.getFactory() == this)
             this.parser = parser;
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The ProgramParser must have the factory set to this factory when setting it as.");
     }
     
-    public ProgramParser getProgramParser() {
+    
+    public ProgramParser<Expression, Statement, Variable> getProgramParser() {
         return this.parser;
     }
     
@@ -66,7 +67,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
     
     private Worm worm;
-    private ProgramParser parser;
+    private ProgramParser<Expression, Statement, Variable> parser;
     
     @Override
     public DoubleExpression createDoubleLiteral(int line, int column, final double d) {
@@ -90,14 +91,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createAnd(final int line, final int column, final Expression e1, final Expression e2) {
-        if (!(e1 instanceof BooleanExpression || e1 instanceof VariableExpression) || !(e2 instanceof BooleanExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "An &&-expression must consist of atleast 2 BooleanExpressions or variables.");
+        if (!e1.getType().isAssignableFrom(Boolean.class) || !e2.getType().isAssignableFrom(Boolean.class))
+            throw new IllegalTypeException(line, column, "An &&-expression must consist of atleast 2 boolean types.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if((e1 instanceof VariableExpression && e1.getType() != Boolean.class) || (e2 instanceof VariableExpression && e2.getType() != Boolean.class))
-                    throw new IllegalTypeException(line, column, " The &&-expression failed to execute since a variable used isn't of type Boolean.");
                 return (Boolean) e1.getResult() && (Boolean) e2.getResult();
             }
         };
@@ -105,29 +104,25 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createOr(final int line, final int column, final Expression e1, final Expression e2) {
-      if (!(e1 instanceof BooleanExpression || e1 instanceof VariableExpression) || !(e2 instanceof BooleanExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "An ||-expression must consist of atleast 2 BooleanExpressions or variables.");
+      if (!e1.getType().isAssignableFrom(Boolean.class) || !e2.getType().isAssignableFrom(Boolean.class))
+          throw new IllegalTypeException(line, column, "An ||-expression must consist of atleast 2 boolean types.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if((e1 instanceof VariableExpression && e1.getType() != Boolean.class) || (e2 instanceof VariableExpression && e2.getType() != Boolean.class))
-                    throw new IllegalTypeException(line, column, " The ||-expression failed to execute since a variable used isn't of type Boolean.");
-                return (Boolean) e1.getResult() || (Boolean) e2.getResult();
+               return (Boolean) e1.getResult() || (Boolean) e2.getResult();
             }
         };
     }
 
     @Override
     public BooleanExpression createNot(final int line, final int column, final Expression e) {
-        if (!(e instanceof BooleanExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "An !-expression must consist of a BooleanExpression or variable.");
+        if (!e.getType().isAssignableFrom(Boolean.class))
+            throw new IllegalTypeException(line, column, "An !-expression must consist of a boolean type.");
        
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if((e instanceof VariableExpression && e.getType() != Boolean.class))
-                    throw new IllegalTypeException(line, column, " The !-expression failed to execute since a variable used isn't of type Boolean.");
                 return !((Boolean) e.getResult());
             }
         };
@@ -148,7 +143,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
         return new EntityExpression() {
             @Override
             public Entity getResult() {
-                if(worm == null)
+                if(ProgramFactoryImpl.this.getWorm() == null)
                     throw new IllegalStateException("The ProgramFactory has to have its worm set before we try to execute any statements created by the factory.");
                 return worm;
             }
@@ -157,14 +152,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetX(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getX()-expression variable isn't of type Entity.");
                 //can throw NullPointerException/NotSupported/.. when necessary :)
                 return ((Entity) e.getResult()).getPosition().getX();
             }
@@ -173,14 +166,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetY(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getY()-expression variable isn't of type Entity.");
                 return ((Entity) e.getResult()).getPosition().getY();
             }
         };
@@ -188,14 +179,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetRadius(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getRadius()-expression variable isn't of type Entity.");
                 return ((Entity) e.getResult()).getRadius();
             }
         };
@@ -203,14 +192,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetDir(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getDir()-expression variable isn't of type Entity.");
                 return ((Entity) e.getResult()).getAngle();
             }
         };
@@ -218,14 +205,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetAP(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getAP()-expression variable isn't of type Entity.");
                 return ((Entity) e.getResult()).getAP();
             }
         };
@@ -233,14 +218,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetMaxAP(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getMaxAP()-expression variable isn't of type Entity.");
                 return ((Entity) e.getResult()).getMaxAP();
             }
         };
@@ -248,14 +231,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetHP(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getHP()-expression variable isn't of type Entity.");
                 return ((Entity) e.getResult()).getHP();
             }
         };
@@ -263,14 +244,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createGetMaxHP(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The getMaxHP()-expression variable isn't of type Entity.");
                 return ((Entity) e.getResult()).getMaxHP();
             }
         };
@@ -278,30 +257,25 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createSameTeam(final int line, final int column, final Expression e) {
-        if(!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity or variable.");
+        if(!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The sameTeam()-expression variable isn't of type Entity.");
-                return getWorm().getTeam() == ((Entity) e.getResult()).getTeam();
+                return getWorm().getTeam() == ((Entity) e.getResult()).getTeam() && getWorm().getTeam() != null;
             }
         };
     }
 
     @Override
     public EntityExpression createSearchObj(final int line, final int column, final Expression e) {
-        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be a double or variable.");
+        if(!e.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "The parameter must be a Double type.");
         
         return new EntityExpression() {
             @Override
             public Entity getResult() {
-                if(e instanceof VariableExpression && e.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "The searchObj()-expression variable isn't of type Double.");
-                
                 Worm worm = ProgramFactoryImpl.this.getWorm();
                 return worm.getWorld().searchObject(worm.getPosition(), worm.getAngle() + (double) e.getResult());
             }
@@ -310,14 +284,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createIsWorm(final int line, final int column, final Expression e) {
-        if (!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+        if (!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The isWorm-expression variable isn't of type Entity.");
                 return e.getResult() instanceof Worm;
             }
         };
@@ -325,14 +297,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createIsFood(final int line, final int column, final Expression e) {
-        if (!(e instanceof EntityExpression || e instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The parameter must be an entity.");
+        if (!e.getType().isAssignableFrom(Entity.class))
+            throw new IllegalTypeException(line, column, "The parameter must be an Entity type.");
 
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if(e instanceof VariableExpression && e.getType() != Entity.class)
-                    throw new IllegalTypeException(line, column, "The isFood-expression variable isn't of type Entity.");
                 return e.getResult() instanceof Food;
             }
         };
@@ -340,21 +310,23 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public Expression createVariableAccess(final int line, final int column, final String name) {
-        //Is complex because we cannot call getGlobals while parsing...
-        //TODO  Change return new Expression to some type of Variable and change every 'instanceof VariableExpression' to that class.
-        return new VariableExpression(this.getProgramParser(), name, line, column);
+        return null;
+        //return new VariableExpression(this.getProgramParser(), name, line, column);
+    }
+    
+    @Override
+    public Expression createVariableAccess(int line, int column, String name, Variable type) {
+        return new VariableExpression(line, column, name, type);
     }
 
     @Override
     public BooleanExpression createLessThan(final int line, final int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
+        if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if((e1 instanceof VariableExpression && e1.getType() != Double.class) || (e2 instanceof VariableExpression && e2.getType() != Double.class))
-                    throw new IllegalTypeException(line, column, "A <-expression variable isn't of type Double");
                 return (Double) e1.getResult() < (Double) e2.getResult();
             }
         };
@@ -362,15 +334,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createGreaterThan(final int line, final int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
+         if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                //TODO: Get rid of the uncessary e1 instanceof VariableExpression down here (everywhere, same place) since getType covers it all
-                if((e1 instanceof VariableExpression && e1.getType() != Double.class) || (e2 instanceof VariableExpression && e2.getType() != Double.class))
-                    throw new IllegalTypeException(line, column, "A >-expression variable isn't of type Double");
                 return (Double) e1.getResult() > (Double) e2.getResult();
             }
         };
@@ -380,14 +349,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createLessThanOrEqualTo(final int line, final int column, final Expression e1, final Expression e2) {
-       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
+        if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if(e1.getType() != Double.class || e2.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "A <=-expression variable isn't of type Double");
                 return (Util.fuzzyLessThanOrEqualTo((Double) e1.getResult(), (Double) e2.getResult()));
             }
         };
@@ -395,14 +362,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createGreaterThanOrEqualTo(final int line, final int column, final Expression e1, final Expression e2) {
-       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
+        if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if(e1.getType() != Double.class || e2.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "A >=-expression variable isn't of type Double");
                 return (Util.fuzzyGreaterThanOrEqualTo((Double) e1.getResult(), (Double) e2.getResult()));
             }
         };
@@ -410,14 +375,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public BooleanExpression createEquality(final int line, final int column, final Expression e1, final Expression e2) {
-        if(!(e1 instanceof VariableExpression) && !(e2 instanceof VariableExpression) && (e1.getType() != e2.getType()))
+        if(e1.getType() != e2.getType())
             throw new IllegalTypeException(line, column, "Both expressions must have the same type.");
         
         return new BooleanExpression() {
             @Override
             public Boolean getResult() {
-                if(e1.getType() != e2.getType())
-                    throw new IllegalTypeException(line, column, "An equality/inequality demands 2 expressions of the same type.");
                 return (e1.getResult() == e2.getResult());
             }
         };
@@ -430,14 +393,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createAdd(final int line, final int column, final Expression e1, final Expression e2) {
-       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
+        if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e1.getType() != Double.class || e2.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
                 return ((double) e1.getResult()) + ((double) e2.getResult());
             }
         };
@@ -445,14 +406,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createSubtraction(final int line, final int column, final Expression e1, final Expression e2) {
-       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
+        if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e1.getType() != Double.class || e2.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
                 return ((double) e1.getResult()) - ((double) e2.getResult());
             }
         };
@@ -460,14 +419,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createMul(final int line, final int column, final Expression e1, final Expression e2) {
-       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
+        if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e1.getType() != Double.class || e2.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
                 return ((double) e1.getResult()) * ((double) e2.getResult());
             }
         };
@@ -475,16 +432,13 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createDivision(final int line, final int column, final Expression e1, final Expression e2) {
-       if(!(e1 instanceof DoubleExpression || e1 instanceof VariableExpression) || !(e2 instanceof DoubleExpression || e2 instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "Both expressions must be of the type DoubleExpression or variables.");
+        if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
-        // Division by zero will automatically throw an exception so we don't have to do it manually.
-       //TODO: Add manual exceptions for illegal division (infinity; 0) because we can give more accurate (line, column) exception info.
+        //TODO: (vraag) NaN allowed?
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e1.getType() != Double.class || e2.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "Both expressions must be of type Double");
                 return ((double) e1.getResult()) / ((double) e2.getResult());
             }
         };
@@ -492,14 +446,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createSqrt(final int line, final int column, final Expression e) {
-        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
+        if(!e.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
                 return Math.sqrt((Double) e.getResult());
             }
         };
@@ -507,14 +459,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createSin(final int line, final int column, final Expression e) {
-        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
+        if(!e.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
                 return Math.sin((Double) e.getResult());
             }
         };
@@ -522,14 +472,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public DoubleExpression createCos(final int line, final int column, final Expression e) {
-        if(!(e instanceof DoubleExpression || e instanceof VariableExpression))
+        if(!e.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
         
         return new DoubleExpression() {
             @Override
             public Double getResult() {
-                if(e.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
                 return Math.cos((Double) e.getResult());
             }
         };
@@ -537,14 +485,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public Statement createTurn(final int line, final int column, final Expression angle) {
-        if (!(angle instanceof DoubleExpression || angle instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The argument must be a variable or a doubleExpression.");
+        if (!angle.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
 
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
-                if(angle.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
                 return handler.turn(ProgramFactoryImpl.this.getWorm(), (Double) angle.getResult());
             }
         };
@@ -582,14 +528,12 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public Statement createFire(final int line, final int column, final Expression yield) {
-        if (!(yield instanceof DoubleExpression || yield instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The argument must be of the type DoubleExpression or a variable.");
+        if (!yield.getType().isAssignableFrom(Double.class))
+            throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
 
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
-                if(yield.getType() != Double.class)
-                    throw new IllegalTypeException(line, column, "The parameter must be of type Double");
                 return handler.fire(ProgramFactoryImpl.this.getWorm(), (int) ((double) yield.getResult()));
             }
         };
@@ -623,13 +567,13 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public IfStatement createIf(int line, int column, Expression condition, Statement then, Statement otherwise) {
-        if(!(condition instanceof BooleanExpression || condition instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression or variable.");
+        if(!condition.getType().isAssignableFrom(Boolean.class))
+            throw new IllegalTypeException(line, column, "The condition must be of type Boolean.");
         
         try {
             if(condition instanceof BooleanExpression)
                 return new IfStatement((BooleanExpression) condition, then, otherwise);
-            if(condition instanceof BooleanExpression)
+            if(condition instanceof VariableExpression)
                 return new IfStatement((VariableExpression) condition, then, otherwise);
         } catch(IllegalArgumentException ex) {
             throw new IllegalTypeException(line, column, ex.getMessage());
@@ -639,8 +583,8 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public WhileStatement createWhile(int line, int column, Expression condition, Statement body) {
-        if(!(condition instanceof BooleanExpression || condition instanceof VariableExpression))
-            throw new IllegalTypeException(line, column, "The condition must be of type BooleanExpression or variable.");
+        if(!condition.getType().isAssignableFrom(Boolean.class))
+            throw new IllegalTypeException(line, column, "The condition must be of type Boolean.");
         
         try {
             if(condition instanceof BooleanExpression)
@@ -674,12 +618,16 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
     @Override
     public Variable<Double> createDoubleType() {
-        return new Variable<>(Double.class);
+        Variable<Double> var = new Variable<>(Double.class);
+        var.setValue(0.0);
+        return var;
     }
 
     @Override
     public Variable<Boolean> createBooleanType() {
-        return new Variable<>(Boolean.class);
+        Variable<Boolean> var = new Variable<>(Boolean.class);
+        var.setValue(false);
+        return var;
     }
 
     @Override
@@ -687,7 +635,10 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
         return new Variable<>(Entity.class);
     }
 
-    @Override
+    /**
+     * Returns the worm associated with the program this factory builds.
+     * @return 
+     */
     public Worm getWorm() {
         return worm;
     }

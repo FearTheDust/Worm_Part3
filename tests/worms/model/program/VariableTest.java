@@ -28,7 +28,7 @@ public class VariableTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testSetValue_Null_Illegal() {
-        Variable test = new Variable(Boolean.class);
+        Variable<Boolean> test = new Variable(Boolean.class);
         test.setValue(null);
     }
 
@@ -37,7 +37,7 @@ public class VariableTest {
      */
     @Test
     public void testSetValue_Null_Legal() {
-        Variable test = new Variable(Entity.class);
+        Variable<Entity> test = new Variable(Entity.class);
         test.setValue(null);
         assertEquals(test.getValue(), null);
     }
@@ -57,30 +57,30 @@ public class VariableTest {
         Facade facade = new Facade();
         Worm worm = facade.createWorm(world, 1, 1.5, Math.PI / 2, 0.5, "Test", null);
  
-        Variable entityTest = new Variable(Entity.class);
+        Variable<Entity> entityTest = new Variable(Entity.class);
         entityTest.setValue(worm);
         assertEquals(entityTest.getValue(), worm);
 
-        Variable boolTest = new Variable(Boolean.class);
+        Variable<Boolean> boolTest = new Variable(Boolean.class);
         boolTest.setValue(true);
         assertEquals(boolTest.getValue(), true);
 
-        Variable doubleTest = new Variable(Double.class);
-        doubleTest.setValue(1);
-        assertEquals(doubleTest.getValue(), 1.0);
+        Variable<Double> doubleTest = new Variable(Double.class);
+        doubleTest.setValue(1.0);
+        assertEquals(doubleTest.getValue(), 1.0, 0);
         
-        Variable wormTest = new Variable(Worm.class);
+        Variable<Entity> wormTest = new Variable(Worm.class);
         wormTest.setValue(worm);
         assertEquals(wormTest.getValue(), worm);
         
-        Variable bigDecimalTest = new Variable(Double.class);
-        bigDecimalTest.setValue(new BigDecimal("5084000.0588484"));
-        assertEquals(bigDecimalTest.getValue(), 5084000.0588484);
+        //Variable<Double> bigDecimalTest = new Variable(Double.class);
+        //bigDecimalTest.setValue(new BigDecimal("5084000.0588484"));
+        //assertEquals(bigDecimalTest.getValue(), 5084000.0588484);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    /*@Test(expected=IllegalArgumentException.class)
     public void testSetValue_Illegal() {
-        Variable doubleTest = new Variable(Double.class);
+        Variable<Double> doubleTest = new Variable(Double.class);
         doubleTest.setValue(true);
-    }
+    }*/
 }

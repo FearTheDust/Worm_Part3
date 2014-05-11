@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import worms.model.program.ProgramFactoryImpl;
 
 import worms.model.programs.parser.WormsParserLexer;
 import worms.model.programs.parser.WormsParserMyListener;
@@ -141,12 +142,8 @@ public class ProgramParser<E, S, T> {
 	public S getStatement() {
 		return statement;
 	}
-        
-        /**
-         * This method returns the factory the parser is using.
-         * @return 
-         */
-        public ProgramFactory getFactory() {
-            return factory;
-        }
+
+    public ProgramFactory<E,S,T> getFactory() {
+        return factory;
+    }
 }

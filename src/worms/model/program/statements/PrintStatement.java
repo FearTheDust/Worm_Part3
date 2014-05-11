@@ -59,9 +59,13 @@ public class PrintStatement implements Statement {
      */
     private void perform() {
         if (expression == null)
-            handler.print(expression.toString());
+            handler.print("null");
+        
+        Object result = expression.getResult();
+        if(result == null)
+            handler.print("null");
         else
-            handler.print(expression.getResult().toString());
+            handler.print(result.toString());
     }
 
     /**

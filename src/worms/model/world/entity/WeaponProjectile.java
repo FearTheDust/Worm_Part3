@@ -103,6 +103,7 @@ public class WeaponProjectile extends Projectile {
 	 *			|			hits = this.getWorld().hitsWorm(calculatedPosition, this.getRadius())
 	 *			| result == loopTime
 	 */
+        @Override
 	public double jumpTime(double timeStep) {
 		double loopTime = timeStep;
 		Position calculatedPosition = this.getPosition();
@@ -131,6 +132,7 @@ public class WeaponProjectile extends Projectile {
 	 * 			| for each Worm shotWorm in new.getWorld().hitsWorm(new.getPosition(), new.getRadius());
 	 * 			|	shotWorm.inflictHitDamage(new.getUsedWeapon().getDamage())
 	 */
+        @Override
 	public void jump(double timeStep) {
 		super.jump(timeStep);
 		ArrayList<Worm> hitList = this.getWorld().hitsWorm(this.getPosition(), this.getRadius());

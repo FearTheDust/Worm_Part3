@@ -105,6 +105,7 @@ public abstract class Projectile extends GameObject {
 	 * 			| if(this.getWorld().getLivingProjectile() != this)
 	 * 			|	result == false
 	 */
+        @Override
 	public final boolean isAlive() {
 		if(this.getWorld() == null)
 			return false;
@@ -204,7 +205,7 @@ public abstract class Projectile extends GameObject {
 	}
 
 	/**
-	 * Returns the jump time if jumped with this projectile's current angle and timeStep.
+	 * Returns the jump time if jumped with this projectile 's current angle and timeStep.
 	 */
 	public abstract double jumpTime(double timeStep);
 	

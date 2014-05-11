@@ -350,7 +350,7 @@ public class World {
 	public List<GameObject> getGameObjects() {
 		return new ArrayList<GameObject>(gameObjList);
 	}
-
+ 
 	/**
 	 * The list containing our GameObjects
 	 */
@@ -414,6 +414,7 @@ public class World {
 			setActiveWorm(getNextWorm());
 			cleanDeadObjects(); // Important we do this after.
 			this.getActiveWorm().giveTurnPoints();
+                        
                         if(this.getActiveWorm().hasProgram()) {
                             this.getActiveWorm().executeProgram();
                             this.nextTurn();
@@ -857,6 +858,19 @@ public class World {
 			result.add((Food) obj);
 		return result;
 	}
+        
+        /**
+	 * Returns all Entity instances in this world.
+	 * 
+	 * @effect getObjectsOfType(Entity.Class) along with a cast to cast every instance of type GameObject to Entity.
+	 * 			| (Collection<Entity>) getObjectsOfType(Entity.Class)
+	 */
+	public Collection<Entity> getEntities() {
+		List<Entity> result = new ArrayList<Entity>();
+		for (GameObject obj : getObjectsOfType(Entity.class))
+			result.add((Entity) obj);
+		return result;
+	}
 
 	/**
 	 * Delete objects that aren't alive anymore in this world or left our world Boundaries.
@@ -920,9 +934,20 @@ public class World {
         Entity shortestObject = null;
         double distance = Double.POSITIVE_INFINITY;
 
-        for (GameObject gameObject : this.getGameObjects()) {
+        for (GameObject gameObject : this.getGameObjects()) { 
             double searchAngle = Math.atan((gameObject.getPosition().getY() - position.getY()) / (gameObject.getPosition().getX() - position.getX()));
-            if (Util.fuzzyEquals(searchAngle, angle, 1E-8) && gameObject instanceof Entity) {
+            //Adjust the angle.
+            if (position.getX() < gameObject.getPosition().getX()) {
+                if (position.getY() > gameObject.getPosition().getY())
+                    searchAngle = 2*Math.PI - searchAngle;
+            } else {
+                if (position.getY() < gameObject.getPosition().getY()) {
+                    searchAngle = Math.PI - searchAngle;
+                } else {
+                    searchAngle += Math.PI;
+                }
+            }
+            if (Util.fuzzyEquals(searchAngle, angle, 1E-2) && gameObject instanceof Entity) {
                 double tempDistance = gameObject.getPosition().distance(position);
                 if (tempDistance < distance && tempDistance > 0) {
                     shortestObject = (Entity) gameObject;
@@ -930,6 +955,7 @@ public class World {
                 }
             }
         }
+        System.out.println(shortestObject);
         return shortestObject;
     }
 }

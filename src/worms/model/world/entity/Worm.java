@@ -115,6 +115,8 @@ public class Worm extends GameObject implements Entity {
                 
 		world.add(this);
                 this.program = program;
+                if(program != null)
+                    program.setWorm(this);
 
 		// Add & set weapons.
 		this.add(new Rifle(this));
@@ -320,7 +322,7 @@ public class Worm extends GameObject implements Entity {
 	 * @param angle The angle to check for.
 	 * 
 	 * @return	Whether the worm has more or an equal amount of AP than the cost to turn with that angle.
-	 * 			| result == Worm.getTurnCost(angle) <= this.getCurrentActionPoints();
+	 * 			| result == Worm.getTurnCost(angle) <= this.getCurrentActionPoints()
 	 */
 	public boolean canTurn(double angle) {
 		return Worm.getTurnCost(angle) <= this.getCurrentActionPoints();
@@ -1057,13 +1059,14 @@ public class Worm extends GameObject implements Entity {
 		
 		if(this.getCurrentWeapon() == null)
 			throw new IllegalStateException("The worm hasn't got a weapon equipped.");
+                
 		WeaponProjectile projectile = this.getCurrentWeapon().createProjectile(yield);
 		if(projectile != null) {
 			this.getWorld().setLivingProjectile(projectile);
 			this.getWorld().add(projectile);
 			//When we let the src-provided jump it doesn't seem to paint the end position although it does 
 			//end up on the same end position it isn't painted like that.
-			this.getWorld().getLivingProjectile().jump(GUIConstants.JUMP_TIME_STEP);
+			//this.getWorld().getLivingProjectile().jump(GUIConstants.JUMP_TIME_STEP);
 		}
 	}
 
