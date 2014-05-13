@@ -23,10 +23,10 @@ import worms.gui.game.modes.SetupInputMode;
 import worms.gui.game.sprites.FoodSprite;
 import worms.gui.game.sprites.WormSprite;
 import worms.gui.messages.MessageType;
-import worms.model.world.entity.Food;
+import worms.model.Food;
 import worms.model.IFacade;
-import worms.model.world.World;
-import worms.model.world.entity.Worm;
+import worms.model.World;
+import worms.model.Worm;
 
 public class PlayGameScreen extends Screen {
 

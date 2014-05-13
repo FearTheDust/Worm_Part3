@@ -11,8 +11,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import worms.model.Entity;
 import worms.model.Facade;
-import worms.model.world.World;
-import worms.model.world.entity.Worm;
+import worms.model.World;
+import worms.model.Worm;
 
 /**
  *

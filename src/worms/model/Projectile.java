@@ -1,9 +1,9 @@
-package worms.model.world.entity;
+package worms.model;
 
 import worms.model.Constants;
-import worms.model.world.World;
 import worms.util.Position;
 import be.kuleuven.cs.som.annotate.*;
+import worms.model.world.entity.GameObject;
 
 /**
  * Represents a Projectile within a world with a certain position, angle, forceTime and propulsionYield.

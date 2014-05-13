@@ -9,7 +9,7 @@ import java.util.List;
 import worms.gui.GUIUtils;
 import worms.gui.game.PlayGameScreen;
 import worms.gui.game.Sprite;
-import worms.model.world.entity.Projectile;
+import worms.model.Projectile;
 
 public class ProjectileSprite extends Sprite<Projectile> {
 

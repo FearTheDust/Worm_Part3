@@ -2,7 +2,7 @@ package worms.gui.game.commands;
 
 import worms.gui.game.PlayGameScreen;
 import worms.model.IFacade;
-import worms.model.world.World;
+import worms.model.World;
 
 public abstract class Command {
 

@@ -17,8 +17,8 @@ import worms.model.Facade;
 import worms.model.Team;
 import worms.model.equipment.weapons.BrentsWeaponOfDoom;
 import worms.model.equipment.weapons.Weapon;
-import worms.model.world.World;
-import worms.model.world.entity.Worm;
+import worms.model.World;
+import worms.model.Worm;
 import worms.util.Position;
 import worms.util.Util;
 

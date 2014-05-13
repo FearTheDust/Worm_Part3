@@ -18,7 +18,7 @@ import worms.gui.game.commands.StartGame;
 import worms.gui.game.commands.Turn;
 import worms.gui.messages.MessageType;
 import worms.model.IFacade;
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 
 class DefaultActionHandler implements IActionHandler {
 

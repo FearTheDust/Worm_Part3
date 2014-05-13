@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package worms.model.program.exceptions;
 
 /**
- *
+ * This exception is an IllegalArgumentException but has the option to ask for a line and column number where the exception is caused from.
+ * This will be formatted into a String and passed to IllegalArgumentException.
+ * 
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */

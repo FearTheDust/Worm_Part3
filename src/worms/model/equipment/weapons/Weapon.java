@@ -1,5 +1,7 @@
 package worms.model.equipment.weapons;
 
+import worms.model.Worm;
+import worms.model.Projectile;
 import worms.model.Constants;
 import worms.model.world.entity.*;
 import worms.util.Position;

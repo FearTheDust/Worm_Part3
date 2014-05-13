@@ -1,6 +1,6 @@
 package worms.model.world.entity;
 
-import worms.model.world.World;
+import worms.model.World;
 import worms.util.Position;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;

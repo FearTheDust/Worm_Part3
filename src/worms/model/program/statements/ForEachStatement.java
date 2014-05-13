@@ -12,7 +12,10 @@ import worms.model.programs.ProgramFactory.ForeachType;
 import static worms.model.programs.ProgramFactory.ForeachType.*;
 
 /**
- *
+ * This Statements represents a java For-each loop. It can iterate over types defined by ProgramFactory.ForeachType.
+ * This class extends ConditionalStatement since that class handles when this class does the actual (when) performing of the body.
+ * This class implements MultipleStatement as this class can have multiple statements in its body.
+ * 
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */

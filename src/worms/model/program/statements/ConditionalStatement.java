@@ -13,6 +13,9 @@ import worms.model.Program;
  * ConditionalStatements should set program.getLastStatement() to "this" when a statement inside their body failed (return false) 
  * and no other lastStatement has been set yet. (meaning not 'caught' by a while inside that body.)
  * 
+ * If a statement extends this abstract class and the statement is able to contain multipleStatement do not forget to implement MultipleStatement
+ * to ensure that all statements in a program are checked for validation.
+ * 
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */

@@ -4,7 +4,7 @@ import worms.gui.game.PlayGameScreen;
 import worms.gui.messages.MessageType;
 import worms.model.IFacade;
 import worms.model.ModelException;
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 
 public class Rename extends InstantaneousCommand {
 	private final String newName;

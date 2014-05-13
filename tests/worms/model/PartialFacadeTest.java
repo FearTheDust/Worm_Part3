@@ -10,8 +10,6 @@ import org.junit.Test;
 import worms.gui.game.IActionHandler;
 import worms.model.programs.ParseOutcome;
 import worms.model.programs.ParseOutcome.Success;
-import worms.model.world.World;
-import worms.model.world.entity.Worm;
 import worms.util.Util;
 
 public class PartialFacadeTest {

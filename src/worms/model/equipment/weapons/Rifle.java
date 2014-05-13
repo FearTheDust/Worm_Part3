@@ -1,7 +1,7 @@
 package worms.model.equipment.weapons;
 
 import be.kuleuven.cs.som.annotate.*;
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 
 /**
  * A Rifle is a Weapon with a projectile mass of RIFLE_MASS kg, a cost of RIFLE_SHOOTCOST, a base damage of RIFLE_BASEDAMAGE

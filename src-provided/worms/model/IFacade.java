@@ -4,10 +4,6 @@ import java.util.Collection;
 import java.util.Random;
 import worms.gui.game.IActionHandler;
 import worms.model.programs.ParseOutcome;
-import worms.model.world.World;
-import worms.model.world.entity.Food;
-import worms.model.world.entity.Projectile;
-import worms.model.world.entity.Worm;
 
 /**
  * Implement this interface to connect your code to the user interface.

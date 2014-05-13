@@ -12,7 +12,7 @@ import worms.gui.GUIUtils;
 import worms.gui.Level;
 import worms.gui.game.sprites.FoodSprite;
 import worms.gui.game.sprites.WormSprite;
-import worms.model.world.World;
+import worms.model.World;
 
 public class PlayGameScreenDebugPainter extends PlayGameScreenPainter {
 

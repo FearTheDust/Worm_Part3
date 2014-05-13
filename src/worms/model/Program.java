@@ -7,7 +7,6 @@ import worms.gui.game.IActionHandler;
 import worms.model.program.Expression;
 import worms.model.program.ProgramFactoryImpl;
 import worms.model.program.Variable;
-import worms.model.program.exceptions.IllegalTypeException;
 import worms.model.program.statements.AssignmentStatement;
 import worms.model.program.statements.ConditionalStatement;
 import worms.model.program.statements.ForEachStatement;
@@ -15,39 +14,33 @@ import worms.model.program.statements.MultipleStatement;
 import worms.model.program.statements.Statement;
 import worms.model.programs.ParseOutcome;
 import worms.model.programs.ProgramParser;
-import worms.model.world.entity.Worm;
 
 public class Program {
 
     public static final int MAX_STATEMENT_AMOUNT = 1000;
 
-    //TODO type-check for assignStatement && ForEach
-    //TODO Move Worm & World to worms.model (see IFacade?)
-    //TODO 
-    
-
-    
     /**
      * Create a program with certain variables and a main statement.
-     * 
+     *
      * @param factory The factory with which the program was assembled.
      * @param globalMap The Map with all variables.
      * @param mainStatement The main statement.
-     * 
-     * @throws IllegalArgumentException 
-     *          When globalMap, mainStatement or factory is a null reference.
-     *          | globalMap == null || mainStatement == null || factory == null
-     * 
+     *
+     * @throws IllegalArgumentException When globalMap, mainStatement or factory
+     * is a null reference. | globalMap == null || mainStatement == null ||
+     * factory == null
+     *
      */
     public Program(ProgramFactoryImpl factory, Map<String, Variable> globalMap, Statement mainStatement) throws IllegalArgumentException {
-        if(globalMap == null || mainStatement == null || factory == null)
+        if (globalMap == null || mainStatement == null || factory == null) {
             throw new IllegalArgumentException("globalMap,mainStatement and factory musn't be a null reference.");
-        
+        }
+
         this.globalMap = globalMap;
         this.mainStatement = mainStatement;
         this.factory = factory;
     }
-    
+
     private ProgramFactoryImpl factory;
 
     /**
@@ -64,18 +57,20 @@ public class Program {
     private Map<String, Variable> globalMap;
 
     /**
-     * 
-     * @throws IllegalStateException 
-     *          When the factory hasn't got a worm or the worm's world is a null reference.
+     *
+     * @throws IllegalStateException When the factory hasn't got a worm or the
+     * worm's world is a null reference.
      */
     public void execute() throws IllegalStateException {
-        if(this.factory.getWorm() == null)
+        if (this.factory.getWorm() == null) {
             throw new IllegalStateException("The factory hasn't got a worm set.");
-        if(this.factory.getWorm().getWorld() == null)
+        }
+        if (this.factory.getWorm().getWorld() == null) {
             throw new IllegalStateException("The factory's worm hasn't got a world set.");
-            
+        }
+
         counter = MAX_STATEMENT_AMOUNT;
-        if(mainStatement.execute(this)) {
+        if (mainStatement.execute(this)) {
             this.setLastStatement(null);
             this.setFinished(true);
         } else {
@@ -138,8 +133,7 @@ public class Program {
 
     /**
      * Check whether the program finished properly last time.
-     *
-     * @return
+     * @return False if the program didn't finish properly last time and we should be searching from which statement to start from next.
      */
     public boolean isFinished() {
         return this.finished;
@@ -167,10 +161,10 @@ public class Program {
         //Always true since we do not allow ForEachLoops with Action Statements (in ForEach constructor).
         return true;
     }
-    
-    
+
     /**
      * Set the worm associated with this program.
+     *
      * @param worm
      * @effect this.factory.setWorm(worm)
      */
@@ -178,65 +172,93 @@ public class Program {
         this.factory.setWorm(worm);
     }
 
+    /**
+     * This additionally checks for additional errors in the program created as defined by Program.getAdditionalErrors()
+     * 
+     * @param programText
+     * @param handler
+     * @see Documentation as defined by the assignment (IFacade.parseProgram(...))
+     * @return 
+     */
     public static ParseOutcome<?> parseProgram(String programText,
-			IActionHandler handler) {
-            
-		ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
-                ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
-                factory.setProgramParser(parser); //NullPointerException
-                Program program;
-                
-                parser.parse(programText);
-                
-                if(parser.getErrors().isEmpty()) {
-                    program = new Program(factory, parser.getGlobals(), parser.getStatement()); //pass: statement, globals
-                    ArrayList<String> list = program.getAdditionalErrors();
-                    if(list.isEmpty()) {
-                        return ParseOutcome.success(program);
-                    } else {
-                        return ParseOutcome.failure(list);
-                    }
-                } else {
-                    
-                    return ParseOutcome.failure(parser.getErrors());
-                }            
-	}
-    
-        public ArrayList<String> getAdditionalErrors() {
-            ArrayList<String> myList = new ArrayList<>();
-            
-                if(this.getMainStatement() instanceof AssignmentStatement) {
-                    if(!(((AssignmentStatement) this.getMainStatement()).isValidVariableType()))
-                        myList.add("The variable " + ((AssignmentStatement) this.getMainStatement()).getVariableName() + " its type does not match the type of the expression assigned to it in an assignment.");
-                } else if(this.getMainStatement() instanceof ForEachStatement) {
-                    if(!((ForEachStatement) this.getMainStatement()).isValidVariableType())
-                        myList.add("The variable " + ((ForEachStatement) this.getMainStatement()).getVariableName() + " of a For-each loop does not match type Entity.");
-                }
-                
-            if(this.getMainStatement() instanceof MultipleStatement) {
-                myList = getAdditionalErrors_Aux(((MultipleStatement) this.getMainStatement()).getStatements());
+            IActionHandler handler) {
+
+        ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
+        ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
+        factory.setProgramParser(parser); //NullPointerException
+        Program program;
+
+        parser.parse(programText);
+
+        if (parser.getErrors().isEmpty()) {
+            program = new Program(factory, parser.getGlobals(), parser.getStatement()); //pass: statement, globals
+            ArrayList<String> list = program.getAdditionalErrors();
+            if (list.isEmpty()) {
+                return ParseOutcome.success(program);
+            } else {
+                return ParseOutcome.failure(list);
             }
-            return myList;
+        } else {
+
+            return ParseOutcome.failure(parser.getErrors());
         }
-        
-        private ArrayList<String> getAdditionalErrors_Aux(List<Statement> statements) {
-            ArrayList<String> myList = new ArrayList<>();
-            
-            for(Statement statement : statements) {
-                if(statement instanceof AssignmentStatement) {
-                    if(!(((AssignmentStatement) statement).isValidVariableType()))
-                        myList.add("The variable " + ((AssignmentStatement) statement).getVariableName() + " its type does not match the type of the expression assigned to it in an assignment.");
-                } else if(statement instanceof ForEachStatement) {
-                    if(!((ForEachStatement) statement).isValidVariableType())
-                        myList.add("The variable " + ((ForEachStatement) statement).getVariableName() + " of a For-each loop does not match type Entity.");
+    }
+
+    /**
+     * This function checks whether the main Statement is an AssignmentStatement or ForEachStatement and validates them.
+     * If the mainStatement is of type MultipleStatement it will call the auxiliary method with the MultipleStatement.getStatements() as a parameter.
+     * All errors found will be returned in an ArrayList.
+     * @return
+     */
+    public ArrayList<String> getAdditionalErrors() {
+        ArrayList<String> myList = new ArrayList<>();
+
+        if (this.getMainStatement() instanceof AssignmentStatement) {
+            if (!(((AssignmentStatement) this.getMainStatement()).isValidVariableType())) {
+                myList.add("The variable " + ((AssignmentStatement) this.getMainStatement()).getVariableName() + " its type does not match the type of the expression assigned to it in an assignment.");
+            }
+        } else if (this.getMainStatement() instanceof ForEachStatement) {
+            if (!((ForEachStatement) this.getMainStatement()).isValidVariableType()) {
+                myList.add("The variable " + ((ForEachStatement) this.getMainStatement()).getVariableName() + " of a For-each loop does not match type Entity.");
+            }
+        }
+
+        if (this.getMainStatement() instanceof MultipleStatement) {
+            myList = getAdditionalErrors_Aux(((MultipleStatement) this.getMainStatement()).getStatements());
+        }
+        return myList;
+    }
+
+    /**
+     * Auxiliary function. This goes trough all the statements provided in the
+     * list, performs the validation checks for ForEach and
+     * AssignmentStatements. Next it checks whether the statement it looped over
+     * is of type MultipleStatement, if so it will get all statements of this
+     * MultipleStatement and call itself with those as a parameter.
+     *
+     * @param statements The statements to go trough.
+     * @return A list of errors found in the statements.
+     */
+    private ArrayList<String> getAdditionalErrors_Aux(List<Statement> statements) {
+        ArrayList<String> myList = new ArrayList<>();
+
+        for (Statement statement : statements) {
+            if (statement instanceof AssignmentStatement) {
+                if (!(((AssignmentStatement) statement).isValidVariableType())) {
+                    myList.add("The variable " + ((AssignmentStatement) statement).getVariableName() + " its type does not match the type of the expression assigned to it in an assignment.");
                 }
-                
-                if(statement instanceof MultipleStatement) {
-                    myList.addAll(getAdditionalErrors_Aux(((MultipleStatement) statement).getStatements()));
+            } else if (statement instanceof ForEachStatement) {
+                if (!((ForEachStatement) statement).isValidVariableType()) {
+                    myList.add("The variable " + ((ForEachStatement) statement).getVariableName() + " of a For-each loop does not match type Entity.");
                 }
             }
-            
-            return myList;
+
+            if (statement instanceof MultipleStatement) {
+                myList.addAll(getAdditionalErrors_Aux(((MultipleStatement) statement).getStatements()));
+            }
         }
-    
+
+        return myList;
+    }
+
 }

@@ -4,7 +4,8 @@ import worms.model.program.exceptions.IllegalArgException;
 import worms.model.programs.ProgramParser;
 
 /**
- *
+ * This expression simply contains a variable. The value and type will be the one of the variable.
+ * 
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  * @param <T> The type of the value the variable holds.

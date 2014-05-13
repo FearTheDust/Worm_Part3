@@ -3,7 +3,6 @@ package worms.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import worms.model.world.entity.Worm;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 

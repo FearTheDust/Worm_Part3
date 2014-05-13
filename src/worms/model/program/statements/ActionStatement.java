@@ -3,8 +3,13 @@ package worms.model.program.statements;
 import worms.model.Program;
 
 /**
- *
- * @author Admin
+ * This abstract class represents an ActionStatement. A statement that performs a certain action in the game.
+ * This statement contains an actionStatement as it is one.
+ * This statement does the handling of (when) the actual action is performed and any class extending this will have to implement
+ * the actual performing of the action (perform(Program program))
+ * 
+ * @author Coosemans Brent
+ * @author Derkinderen Vincent
  */
 public abstract class ActionStatement implements Statement {
 

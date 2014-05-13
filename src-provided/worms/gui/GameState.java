@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import worms.gui.game.commands.Command;
 import worms.model.IFacade;
-import worms.model.world.World;
-import worms.model.world.entity.Worm;
+import worms.model.World;
+import worms.model.Worm;
 
 public class GameState {
 

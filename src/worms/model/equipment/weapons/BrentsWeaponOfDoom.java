@@ -1,7 +1,7 @@
 package worms.model.equipment.weapons;
 
 import be.kuleuven.cs.som.annotate.Raw;
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 
 /**
  * Brent's weapon of joy.

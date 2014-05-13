@@ -1,6 +1,6 @@
 package worms.gui.game;
 
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 
 /**
  * <p>

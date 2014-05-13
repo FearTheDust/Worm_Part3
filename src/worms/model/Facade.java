@@ -6,7 +6,6 @@ import java.util.Random;
 import worms.gui.game.IActionHandler;
 import worms.model.equipment.weapons.Weapon;
 import worms.model.programs.ParseOutcome;
-import worms.model.world.World;
 import worms.model.world.entity.*;
 import worms.util.Position;
 

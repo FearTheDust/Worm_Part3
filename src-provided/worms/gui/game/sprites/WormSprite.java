@@ -5,7 +5,7 @@ import worms.gui.GUIUtils;
 import worms.gui.game.ImageSprite;
 import worms.gui.game.PlayGameScreen;
 import worms.model.ModelException;
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 
 public class WormSprite extends ImageSprite<Worm> {
 

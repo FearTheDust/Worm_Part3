@@ -20,7 +20,7 @@ import worms.gui.game.sprites.FoodSprite;
 import worms.gui.game.sprites.ProjectileSprite;
 import worms.gui.game.sprites.WormSprite;
 import worms.model.ModelException;
-import worms.model.world.World;
+import worms.model.World;
 
 public class PlayGameScreenPainter extends AbstractPainter<PlayGameScreen> {
 

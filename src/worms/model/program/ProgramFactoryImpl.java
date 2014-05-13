@@ -9,8 +9,8 @@ import worms.model.program.exceptions.IllegalTypeException;
 import worms.model.program.statements.*;
 import worms.model.programs.ProgramFactory;
 import worms.model.programs.ProgramParser;
-import worms.model.world.entity.Food;
-import worms.model.world.entity.Worm;
+import worms.model.Food;
+import worms.model.Worm;
 import worms.util.Util;
 
 /**

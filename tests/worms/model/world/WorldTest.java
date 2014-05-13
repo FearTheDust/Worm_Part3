@@ -1,5 +1,6 @@
 package worms.model.world;
 
+import worms.model.World;
 import java.util.Random;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertEquals;
@@ -14,10 +15,10 @@ import worms.model.Entity;
 import worms.model.Facade;
 import worms.model.Team;
 import worms.model.equipment.weapons.Bazooka;
-import worms.model.world.entity.Food;
+import worms.model.Food;
 import worms.model.world.entity.GameObject;
 import worms.model.world.entity.WeaponProjectile;
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 import worms.util.Position;
 
 /**

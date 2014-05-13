@@ -6,7 +6,7 @@ import worms.gui.game.sprites.WormSprite;
 import worms.gui.messages.MessageType;
 import worms.model.IFacade;
 import worms.model.ModelException;
-import worms.model.world.entity.Worm;
+import worms.model.Worm;
 
 public class Jump extends Command {
 	private boolean hasJumped;

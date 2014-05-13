@@ -1,5 +1,8 @@
-package worms.model.world;
+package worms.model;
 
+import worms.model.Worm;
+import worms.model.Projectile;
+import worms.model.Food;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +12,7 @@ import worms.model.*;
 import worms.model.world.entity.*;
 import worms.util.*;
 import be.kuleuven.cs.som.annotate.*;
+import worms.model.world.WorldState;
 
 /**
  * A two dimensional world with a certain height and width. The world may or may not contain any teams and GameObjects.
@@ -947,6 +951,7 @@ public class World {
                     searchAngle += Math.PI;
                 }
             }
+            //TODO: Fuzzy Between?? (Brent)
             if (Util.fuzzyEquals(searchAngle, angle, 1E-2) && gameObject instanceof Entity) {
                 double tempDistance = gameObject.getPosition().distance(position);
                 if (tempDistance < distance && tempDistance > 0) {

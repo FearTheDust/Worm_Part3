@@ -2,7 +2,7 @@ package worms.gui.game.sprites;
 
 import worms.gui.game.ImageSprite;
 import worms.gui.game.PlayGameScreen;
-import worms.model.world.entity.Food;
+import worms.model.Food;
 
 public class FoodSprite extends ImageSprite<Food> {
 

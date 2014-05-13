@@ -1,10 +1,10 @@
-package worms.model.world.entity;
+package worms.model;
 
 import be.kuleuven.cs.som.annotate.*;
 import worms.model.Constants;
 import worms.model.Entity;
 import worms.model.Team;
-import worms.model.world.World;
+import worms.model.world.entity.GameObject;
 import worms.util.Position;
 
 /**

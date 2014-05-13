@@ -1,5 +1,7 @@
 package worms.model.world.entity;
 
+import worms.model.Worm;
+import worms.model.Projectile;
 import java.util.ArrayList;
 
 import worms.model.equipment.weapons.Weapon;

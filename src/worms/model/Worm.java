@@ -1,13 +1,14 @@
-package worms.model.world.entity;
+package worms.model;
 
+import worms.model.Food;
 import java.util.ArrayList;
 import java.util.List;
 
 import be.kuleuven.cs.som.annotate.*;
-import worms.gui.GUIConstants;
 import worms.model.*;
 import worms.model.equipment.weapons.*;
-import worms.model.world.World;
+import worms.model.world.entity.GameObject;
+import worms.model.world.entity.WeaponProjectile;
 import worms.util.*;
 
 /**
@@ -1000,7 +1001,7 @@ public class Worm extends GameObject implements Entity {
 	 * Let this worm fall down until it leaves the world boundaries or is adjacent to impassable terrain, while falling down.
 	 * 
 	 * @effect Let the worm fall down.
-	 * 			| super.fall()
+	 *          | super.fall()
 	 */
 	public void softFall() {
 		super.fall();
@@ -1023,6 +1024,7 @@ public class Worm extends GameObject implements Entity {
 	 * @effect set the position for the worm.
 	 * 		| super.setPosition(position)
 	 */
+        @Override
 	public void setPosition(Position position) {
 		super.setPosition(position);
 		
@@ -1071,8 +1073,9 @@ public class Worm extends GameObject implements Entity {
 	}
 
     /**
-     * 
-     * @return this.getCurrentHitPoints()
+     * This will return the current HP of this worm.
+     * @return This will return the current HP of this worm as defined by getCurrentHitPoints()
+     *          | result == this.getCurrentHitPoints()
      */    
     @Override @Basic
     public double getHP() {
@@ -1080,8 +1083,9 @@ public class Worm extends GameObject implements Entity {
     }
 
     /**
-     * 
-     * @return this.getMaximumHitPoints()
+     * This will return the maximum HP of this worm.
+     * @return This will return the maximum HP of this worm as defined by getMaximumHitPoints()
+     *          | result == this.getMaximumHitPoints()
      */
     @Override
     public double getMaxHP() {
@@ -1089,8 +1093,9 @@ public class Worm extends GameObject implements Entity {
     }
 
     /**
-     * 
-     * @return this.getCurrentActionPoints()
+     * This will return the current AP of this worm.
+     * @return The current AP of this worm as defined by getCurrentActionPoints()
+     *          | result == this.getCurrentActionPoints()
      */
     @Override @Basic
     public double getAP() {
@@ -1098,8 +1103,9 @@ public class Worm extends GameObject implements Entity {
     }
 
     /**
-     * 
-     * @return this.getMaximumActionPoints()
+     * This will return the maximum AP of this worm.
+     * @return The maximum AP of this worm as defined by getMaximumActionPoints()
+     *          | result == this.getMaximumActionPoints()
      */
     @Override
     public double getMaxAP() {
@@ -1110,7 +1116,8 @@ public class Worm extends GameObject implements Entity {
      * Returns a representation of this worm in String.
      * Format: the name of the worm followed by its Action Points and its Hit Points.
      * 
-     * @return == "Name: " + this.getName() + " ; AP: " + this.getCurrentActionPoints() + "/" + this.getMaximumActionPoints()
+     * @return The name of this worm along with AP and HP information formatted in a certain way.
+     *          | result == "Name: " + this.getName() + " ; AP: " + this.getCurrentActionPoints() + "/" + this.getMaximumActionPoints()
      *           + " ; HP: " + this.getCurrentHitPoints() + "/" + this.getMaximumHitPoints()
      */
     @Override
@@ -1122,7 +1129,8 @@ public class Worm extends GameObject implements Entity {
     /**
      * Execute the program as defined by the Program.
      * Does nothing when the program is a null reference.
-     * @effect program.execute();
+     * @effect The program executes as defined by execute()
+     *          | program.execute();
      */
     public void executeProgram() {
         if(program != null)

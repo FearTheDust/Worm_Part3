@@ -8,7 +8,8 @@ import worms.model.program.Expression;
 import worms.model.program.VariableExpression;
 
 /**
- *
+ * A while statement. (e.g. while())
+ * 
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */
@@ -27,7 +28,6 @@ public class WhileStatement extends ConditionalStatement implements MultipleStat
         if (body == null || condition == null) {
             throw new IllegalArgumentException("The body statements or the condition musn't be a null reference.");
         }
-        
         if(condition.getType() != Boolean.class) {
             throw new IllegalArgumentException("The condition of the while statement must be of type Boolean.");
         }

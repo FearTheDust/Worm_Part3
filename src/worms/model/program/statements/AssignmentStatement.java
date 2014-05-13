@@ -6,7 +6,11 @@ import worms.model.program.Variable;
 import worms.model.programs.ProgramParser;
 
 /**
- *
+ * This statement is an assignment (e.g x := 5).
+ * This statement will give the value calculated using the right hand side expression to the variableName (left side) provided.
+ * A check is performed during setting the value to make sure the type of the variable matches the type of the expression.
+ * 
+ * 
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */
@@ -30,6 +34,14 @@ public class AssignmentStatement implements Statement {
         return this.variableName;
     }
 
+    /**
+     * Will perform a check before executing the assignment.
+     * It will make sure the type of the expression matches the type of the variable.
+     * 
+     * @param program The program to perform this assignment on.
+     * @return 
+     * @see Variable.isValidValueType(Expression)
+     */
     @Override
     public boolean execute(Program program) {
         if (program.getCounter() <= 0) {
