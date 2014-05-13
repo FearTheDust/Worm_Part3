@@ -1,9 +1,10 @@
 package worms.model.program.statements;
 
+import java.util.ArrayList;
+import java.util.List;
 import worms.model.Program;
 import worms.model.program.BooleanExpression;
 import worms.model.program.Expression;
-import worms.model.program.Variable;
 import worms.model.program.VariableExpression;
 
 /**
@@ -11,7 +12,7 @@ import worms.model.program.VariableExpression;
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */
-public class WhileStatement extends ConditionalStatement {
+public class WhileStatement extends ConditionalStatement implements MultipleStatement {
 
     public WhileStatement(BooleanExpression condition, Statement body) {
         if (body == null || condition == null) {
@@ -25,6 +26,10 @@ public class WhileStatement extends ConditionalStatement {
     public WhileStatement(VariableExpression condition, Statement body) {
         if (body == null || condition == null) {
             throw new IllegalArgumentException("The body statements or the condition musn't be a null reference.");
+        }
+        
+        if(condition.getType() != Boolean.class) {
+            throw new IllegalArgumentException("The condition of the while statement must be of type Boolean.");
         }
 
         this.condition = condition;
@@ -60,5 +65,12 @@ public class WhileStatement extends ConditionalStatement {
         }
         
         return true;
+    }
+
+    @Override
+    public List<Statement> getStatements() {
+        ArrayList<Statement> myList = new ArrayList<>();
+        myList.add(body);
+        return myList;
     }
 }

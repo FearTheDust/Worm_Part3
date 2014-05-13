@@ -17,6 +17,10 @@ public class IllegalArgException extends IllegalArgumentException {
         super("line: " + line + "; column: " + column);
     }
     
+    public IllegalArgException(String message) {
+        super(message);
+    }
+    
     public IllegalArgException (int line, int column, String message) {
         super("line: " + line + "; column: " + column + "; " + message);
     }

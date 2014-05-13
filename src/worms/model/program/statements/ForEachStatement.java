@@ -1,6 +1,8 @@
 package worms.model.program.statements;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import worms.model.Entity;
 import worms.model.Program;
 import worms.model.program.ProgramFactoryImpl;
@@ -14,7 +16,7 @@ import static worms.model.programs.ProgramFactory.ForeachType.*;
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */
-public class ForEachStatement extends ConditionalStatement {
+public class ForEachStatement extends ConditionalStatement implements MultipleStatement {
 
     /*public ForEachStatement(ProgramFactory factory, ProgramFactory.ForeachType type, Variable variable, Statement body) {
         this.factory = factory;
@@ -54,6 +56,14 @@ public class ForEachStatement extends ConditionalStatement {
     private final ForeachType type;
     private final String variableName;
     private final Statement body;
+    
+    /**
+     * The name of the variable we use in this for each statement.
+     * @return 
+     */
+    public String getVariableName() {
+        return this.variableName;
+    }
 
     /**
      *  Checks if any reference is null. 
@@ -134,9 +144,22 @@ public class ForEachStatement extends ConditionalStatement {
         return body.hasActionStatement();
     }
 
-    /*@Override
-    public void perform() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }*/
+    @Override
+    public List<Statement> getStatements() {
+        ArrayList<Statement> myList = new ArrayList<>();
+        myList.add(body);
+        return myList;
+    }
 
+    /**
+     * Returns whether this ForEachStatement is valid.
+     * This means the type of the variable must match the type of collection we run through.
+     * @return false if the variable does not exist, false if the type of the variable isn't Entity.class
+     */
+    public boolean isValidVariableType() {
+        Variable givenVariable = (Variable) this.factory.getProgramParser().getGlobals().get(variableName);
+        if(givenVariable == null)
+            return false;
+        return givenVariable.getType() == Entity.class;   
+    }
 }

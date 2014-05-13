@@ -21,6 +21,14 @@ public class AssignmentStatement implements Statement {
     private final ProgramParser parser;
     private final String variableName;
     private final Expression rhs;
+    
+    /**
+     * The name of the variable used in this assignment (left hand side).
+     * @return 
+     */
+    public String getVariableName() {
+        return this.variableName;
+    }
 
     @Override
     public boolean execute(Program program) {
@@ -47,12 +55,23 @@ public class AssignmentStatement implements Statement {
 
     /**
      * Returns false.
-     *
      * @return false.
      */
     @Override
     public boolean hasActionStatement() {
         return false;
+    }
+    
+    /**
+     * Returns whether the type of the variable matches the type of the expression.
+     * @return False when the variable doesn't exist or when !variable.isValidValueType(expression)
+     */
+    public boolean isValidVariableType() {
+        Variable variable = (Variable) parser.getGlobals().get(variableName);
+        if(variable == null)
+            return false;
+        
+        return variable.isValidValueType(rhs);
     }
 
 }

@@ -1,10 +1,11 @@
 
 package worms.model.program.statements;
 
+import java.util.ArrayList;
+import java.util.List;
 import worms.model.Program;
 import worms.model.program.BooleanExpression;
 import worms.model.program.Expression;
-import worms.model.program.Variable;
 import worms.model.program.VariableExpression;
 
 /**
@@ -13,7 +14,7 @@ import worms.model.program.VariableExpression;
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */
-public class IfStatement extends ConditionalStatement {
+public class IfStatement extends ConditionalStatement implements MultipleStatement {
 
     /**
      * Initialize an If-Statement.
@@ -43,6 +44,10 @@ public class IfStatement extends ConditionalStatement {
     public IfStatement(VariableExpression condition, Statement then, Statement otherwise) throws IllegalArgumentException {
         if(then == null || otherwise == null || condition == null)
             throw new IllegalArgumentException("The if/else statements or the condition musn't be a null reference.");
+        
+        if(condition.getType() != Boolean.class) {
+            throw new IllegalArgumentException("The condition of the if-statement must be of type Boolean.");
+        }
         
         this.condition = condition;
         this.thenStatement = then;
@@ -99,6 +104,14 @@ public class IfStatement extends ConditionalStatement {
         }
         
         return true;
+    }
+
+    @Override
+    public List<Statement> getStatements() {
+        ArrayList<Statement> myList = new ArrayList<>();
+        myList.add(thenStatement);
+        myList.add(otherwiseStatement);
+        return myList;
     }
     
 }

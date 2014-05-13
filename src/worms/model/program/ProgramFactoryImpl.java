@@ -435,7 +435,6 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
         if(!e1.getType().isAssignableFrom(Double.class) || !e2.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "Both expressions must be of the type Double.");
         
-        //TODO: (vraag) NaN allowed?
         return new DoubleExpression() {
             @Override
             public Double getResult() {

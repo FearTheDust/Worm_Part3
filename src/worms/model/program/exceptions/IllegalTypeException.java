@@ -18,6 +18,10 @@ public class IllegalTypeException extends IllegalArgException {
     public IllegalTypeException (int line, int column) {
         super(line, column);
     }
+    
+    public IllegalTypeException(String message) {
+        super(message);
+    }
 
     public IllegalTypeException (int line, int column, String message) {
         super(line, column, message);

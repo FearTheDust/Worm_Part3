@@ -11,7 +11,7 @@ import worms.model.Program;
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */
-public class SequencedStatement implements Statement {
+public class SequencedStatement implements Statement, MultipleStatement {
 
     /**
      * A statement which is a list of statements
@@ -61,8 +61,9 @@ public class SequencedStatement implements Statement {
         return false;
     }
 
-    /*@Override
-    public void perform() {
-    }*/
+    @Override
+    public List<Statement> getStatements() {
+        return statements;
+    }
     
 }

@@ -1,11 +1,17 @@
 package worms.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import worms.gui.game.IActionHandler;
 import worms.model.program.Expression;
 import worms.model.program.ProgramFactoryImpl;
 import worms.model.program.Variable;
+import worms.model.program.exceptions.IllegalTypeException;
+import worms.model.program.statements.AssignmentStatement;
 import worms.model.program.statements.ConditionalStatement;
+import worms.model.program.statements.ForEachStatement;
+import worms.model.program.statements.MultipleStatement;
 import worms.model.program.statements.Statement;
 import worms.model.programs.ParseOutcome;
 import worms.model.programs.ProgramParser;
@@ -15,9 +21,11 @@ public class Program {
 
     public static final int MAX_STATEMENT_AMOUNT = 1000;
 
-    //TODO (vraag) multiple error throwing.
-    //TODO (vraag) 1.8.3 types Potential overflows in double to integer conversion shall be handler in a total manner.
-    // there is no double to integer conversion
+    //TODO type-check for assignStatement && ForEach
+    //TODO Move Worm & World to worms.model (see IFacade?)
+    //TODO 
+    
+
     
     /**
      * Create a program with certain variables and a main statement.
@@ -182,10 +190,53 @@ public class Program {
                 
                 if(parser.getErrors().isEmpty()) {
                     program = new Program(factory, parser.getGlobals(), parser.getStatement()); //pass: statement, globals
-                    return ParseOutcome.success(program);
+                    ArrayList<String> list = program.getAdditionalErrors();
+                    if(list.isEmpty()) {
+                        return ParseOutcome.success(program);
+                    } else {
+                        return ParseOutcome.failure(list);
+                    }
                 } else {
+                    
                     return ParseOutcome.failure(parser.getErrors());
-                }
+                }            
 	}
+    
+        public ArrayList<String> getAdditionalErrors() {
+            ArrayList<String> myList = new ArrayList<>();
+            
+                if(this.getMainStatement() instanceof AssignmentStatement) {
+                    if(!(((AssignmentStatement) this.getMainStatement()).isValidVariableType()))
+                        myList.add("The variable " + ((AssignmentStatement) this.getMainStatement()).getVariableName() + " its type does not match the type of the expression assigned to it in an assignment.");
+                } else if(this.getMainStatement() instanceof ForEachStatement) {
+                    if(!((ForEachStatement) this.getMainStatement()).isValidVariableType())
+                        myList.add("The variable " + ((ForEachStatement) this.getMainStatement()).getVariableName() + " of a For-each loop does not match type Entity.");
+                }
+                
+            if(this.getMainStatement() instanceof MultipleStatement) {
+                myList = getAdditionalErrors_Aux(((MultipleStatement) this.getMainStatement()).getStatements());
+            }
+            return myList;
+        }
+        
+        private ArrayList<String> getAdditionalErrors_Aux(List<Statement> statements) {
+            ArrayList<String> myList = new ArrayList<>();
+            
+            for(Statement statement : statements) {
+                if(statement instanceof AssignmentStatement) {
+                    if(!(((AssignmentStatement) statement).isValidVariableType()))
+                        myList.add("The variable " + ((AssignmentStatement) statement).getVariableName() + " its type does not match the type of the expression assigned to it in an assignment.");
+                } else if(statement instanceof ForEachStatement) {
+                    if(!((ForEachStatement) statement).isValidVariableType())
+                        myList.add("The variable " + ((ForEachStatement) statement).getVariableName() + " of a For-each loop does not match type Entity.");
+                }
+                
+                if(statement instanceof MultipleStatement) {
+                    myList.addAll(getAdditionalErrors_Aux(((MultipleStatement) statement).getStatements()));
+                }
+            }
+            
+            return myList;
+        }
     
 }

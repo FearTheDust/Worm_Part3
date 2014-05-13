@@ -30,6 +30,6 @@ public interface Statement {
      * Returns whether or not this statement contains or is an ActionStatement.
      * @return 
      */
-    public abstract boolean hasActionStatement();
+    public boolean hasActionStatement();
     
 }
