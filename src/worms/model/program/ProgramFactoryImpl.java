@@ -309,13 +309,13 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Expression createVariableAccess(final int line, final int column, final String name) {
+    public VariableExpression createVariableAccess(final int line, final int column, final String name) {
         return null;
         //return new VariableExpression(this.getProgramParser(), name, line, column);
     }
     
     @Override
-    public Expression createVariableAccess(int line, int column, String name, Variable type) {
+    public VariableExpression createVariableAccess(int line, int column, String name, Variable type) {
         return new VariableExpression(line, column, name, type);
     }
 
@@ -483,7 +483,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createTurn(final int line, final int column, final Expression angle) {
+    public ActionStatement createTurn(final int line, final int column, final Expression angle) {
         if (!angle.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
 
@@ -496,7 +496,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createMove(int line, int column) {
+    public ActionStatement createMove(int line, int column) {
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
@@ -506,7 +506,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createJump(int line, int column) {
+    public ActionStatement createJump(int line, int column) {
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
@@ -516,7 +516,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createToggleWeap(int line, int column) {
+    public ActionStatement createToggleWeap(int line, int column) {
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
@@ -526,7 +526,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createFire(final int line, final int column, final Expression yield) {
+    public ActionStatement createFire(final int line, final int column, final Expression yield) {
         if (!yield.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
 
@@ -539,7 +539,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createSkip(int line, int column) {
+    public ActionStatement createSkip(int line, int column) {
         return new ActionStatement() {
             @Override
             public boolean perform(Program program) {
@@ -597,7 +597,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public Statement createForeach(int line, int column, ForeachType type, String variableName, Statement body) {
+    public ForEachStatement createForeach(int line, int column, ForeachType type, String variableName, Statement body) {
         try {
             return new ForEachStatement(this, type, variableName, body);
         } catch(IllegalArgumentException ex) {
