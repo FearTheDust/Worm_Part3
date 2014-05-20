@@ -82,7 +82,7 @@ public abstract class GameObject {
 	 * Returns the world the worm is in.
          * @return The world.
 	 */
-        @Basic
+    @Basic
 	public World getWorld() {
 		return world;
 	}

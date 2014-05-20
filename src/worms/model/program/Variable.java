@@ -2,6 +2,7 @@
 package worms.model.program;
 
 import worms.model.Entity;
+import worms.model.program.expressions.Expression;
 
 
 /**
@@ -97,7 +98,7 @@ public class Variable<T> {
      * @return Whether it is valid.
      *          | result == expression.getType().isAssignableFrom(this.getType());
      */
-    public boolean isValidValueType(Expression expression) {
+    public boolean isValidValueType(Expression<T> expression) {
         return expression.getType().isAssignableFrom(this.getType());
     }
 

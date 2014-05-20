@@ -1,4 +1,4 @@
-package worms.model.program;
+package worms.model.program.expressions;
 
 /**
  * Represents an expression of type Boolean.

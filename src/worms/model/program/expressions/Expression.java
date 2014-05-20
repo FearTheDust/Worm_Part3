@@ -1,4 +1,4 @@
-package worms.model.program;
+package worms.model.program.expressions;
 
 /**
  * This class represents an expression of a certain type.

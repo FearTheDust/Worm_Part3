@@ -21,13 +21,6 @@ import static worms.model.programs.ProgramFactory.ForeachType.*;
  */
 public class ForEachStatement extends ConditionalStatement implements MultipleStatement {
 
-    /*public ForEachStatement(ProgramFactory factory, ProgramFactory.ForeachType type, Variable variable, Statement body) {
-        this.factory = factory;
-        this.type = type;
-        this.variable = variable;
-        this.body = body;
-    }*/
-
     /**
      * ForEach statement.
      *
@@ -78,7 +71,7 @@ public class ForEachStatement extends ConditionalStatement implements MultipleSt
      *
      * @return Whether it contains a null reference.
      */
-    public static boolean containsNullReference(ProgramFactory factory, ForeachType type, String variableName, Statement body) {
+    public static boolean containsNullReference(ProgramFactoryImpl factory, ForeachType type, String variableName, Statement body) {
         return (factory == null || type == null || variableName == null || body == null);
     }
 

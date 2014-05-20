@@ -2,11 +2,11 @@ package worms.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 import worms.gui.game.IActionHandler;
-import worms.model.program.Expression;
 import worms.model.program.ProgramFactoryImpl;
 import worms.model.program.Variable;
+import worms.model.program.expressions.Expression;
 import worms.model.program.statements.AssignmentStatement;
 import worms.model.program.statements.ConditionalStatement;
 import worms.model.program.statements.ForEachStatement;
@@ -31,30 +31,16 @@ public class Program {
      * factory == null
      *
      */
-    public Program(ProgramFactoryImpl factory, Map<String, Variable> globalMap, Statement mainStatement) throws IllegalArgumentException {
-        if (globalMap == null || mainStatement == null || factory == null) {
+    public Program(ProgramFactoryImpl factory, Statement mainStatement) throws IllegalArgumentException {
+        if (mainStatement == null || factory == null) {
             throw new IllegalArgumentException("globalMap,mainStatement and factory musn't be a null reference.");
         }
-
-        this.globalMap = globalMap;
+        
         this.mainStatement = mainStatement;
         this.factory = factory;
     }
 
     private ProgramFactoryImpl factory;
-
-    /**
-     * The Map of global variables. <String name, Variable variable>
-     *
-     * @return The map of global variables as provided in the constructor.
-     */
-    public Map<String, Variable> getGlobals() {
-        //Actually it would be better to not give the reference but clone it.
-        //But since we don't know which Maptype it is AND there is no clone function on a map we can't do that.
-        return globalMap;
-    }
-
-    private Map<String, Variable> globalMap;
 
     /**
      *
@@ -184,14 +170,14 @@ public class Program {
             IActionHandler handler) {
 
         ProgramFactoryImpl factory = new ProgramFactoryImpl(handler);
-        ProgramParser<Expression, Statement, Variable> parser = new ProgramParser<>(factory);
+        ProgramParser<Expression<?>, Statement, Variable<?>> parser = new ProgramParser<>(factory);
         factory.setProgramParser(parser); //NullPointerException
         Program program;
 
         parser.parse(programText);
 
         if (parser.getErrors().isEmpty()) {
-            program = new Program(factory, parser.getGlobals(), parser.getStatement()); //pass: statement, globals
+            program = new Program(factory, parser.getStatement()); //pass: statement, globals
             ArrayList<String> list = program.getAdditionalErrors();
             if (list.isEmpty()) {
                 return ParseOutcome.success(program);

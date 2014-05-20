@@ -1,6 +1,5 @@
 package worms.util;
 
-import worms.util.Util;
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -12,6 +11,7 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar 	The x- or y-coordinates are never "Not a Number".
  * 			| !Double.isNaN(this.getX()) && !Double.isNaN(this.getY())
  */
+@Value
 public class Position {
 
 	/**

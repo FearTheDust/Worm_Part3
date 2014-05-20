@@ -82,7 +82,6 @@ public class Food extends GameObject implements Entity {
 
     /**
      * 
-     * @return
      * @throws IllegalStateException 
      *          This class doesn't support an angle and will throw this exception.
      */
@@ -93,7 +92,6 @@ public class Food extends GameObject implements Entity {
 
     /**
      *
-     * @return 
      * @throws IllegalStateException 
      *          This class doesn't support hit points and will throw this exception.
      */
@@ -103,8 +101,7 @@ public class Food extends GameObject implements Entity {
     }
 
     /**
-     *
-     * @return 
+     * 
      * @throws IllegalStateException 
      *          This class doesn't support maximum hit points and will throw this exception.
      */
@@ -115,7 +112,6 @@ public class Food extends GameObject implements Entity {
 
     /**
      *
-     * @return 
      * @throws IllegalStateException 
      *          This class doesn't support action points and will throw this exception.
      */
@@ -125,8 +121,7 @@ public class Food extends GameObject implements Entity {
     }
 
      /**
-     *
-     * @return 
+     * 
      * @throws IllegalStateException 
      *          This class doesn't support maximum action points and will throw this exception.
      */
@@ -137,7 +132,6 @@ public class Food extends GameObject implements Entity {
 
     /**
      * 
-     * @return
      * @throws IllegalStateException 
      *          This class doesn't support teams.
      */

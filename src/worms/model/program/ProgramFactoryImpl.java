@@ -1,11 +1,17 @@
 package worms.model.program;
 
 import java.util.List;
+
 import worms.gui.game.IActionHandler;
 import worms.model.Entity;
 import worms.model.Program;
 import worms.model.program.exceptions.IllegalArgException;
 import worms.model.program.exceptions.IllegalTypeException;
+import worms.model.program.expressions.BooleanExpression;
+import worms.model.program.expressions.DoubleExpression;
+import worms.model.program.expressions.EntityExpression;
+import worms.model.program.expressions.Expression;
+import worms.model.program.expressions.VariableExpression;
 import worms.model.program.statements.*;
 import worms.model.programs.ProgramFactory;
 import worms.model.programs.ProgramParser;
@@ -25,7 +31,7 @@ import worms.util.Util;
  * @author Derkinderen Vincent
  * @author Coosemans Brent
  */
-public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement, Variable> {
+public class ProgramFactoryImpl implements ProgramFactory<Expression<?>, Statement, Variable<?>> {
     
     /**
      * The programFactory to help construct the Program.
@@ -43,7 +49,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
      * @throws IllegalArgumentException
      *          When the parser isn't using this factory.
      */
-    public void setProgramParser(ProgramParser<Expression, Statement, Variable> parser) throws IllegalArgumentException {
+    public void setProgramParser(ProgramParser<Expression<?>, Statement, Variable<?>> parser) throws IllegalArgumentException {
         if(parser.getFactory() == this)
             this.parser = parser;
         else
@@ -51,7 +57,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
     
     
-    public ProgramParser<Expression, Statement, Variable> getProgramParser() {
+    public ProgramParser<Expression<?>, Statement, Variable<?>> getProgramParser() {
         return this.parser;
     }
     
@@ -67,7 +73,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
     
     private Worm worm;
-    private ProgramParser<Expression, Statement, Variable> parser;
+    private ProgramParser<Expression<?>, Statement, Variable<?>> parser;
     
     @Override
     public DoubleExpression createDoubleLiteral(int line, int column, final double d) {
@@ -444,7 +450,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
     }
 
     @Override
-    public DoubleExpression createSqrt(final int line, final int column, final Expression e) {
+    public DoubleExpression createSqrt(final int line, final int column, final Expression<?> e) {
         if(!e.getType().isAssignableFrom(Double.class))
             throw new IllegalTypeException(line, column, "The argument must be of the type Double.");
         

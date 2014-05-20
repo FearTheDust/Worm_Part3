@@ -1,5 +1,6 @@
-package worms.model.program;
+package worms.model.program.expressions;
 
+import worms.model.program.Variable;
 import worms.model.program.exceptions.IllegalArgException;
 import worms.model.programs.ProgramParser;
 

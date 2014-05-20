@@ -3,10 +3,11 @@ package worms.model.program.statements;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import worms.model.Program;
-import worms.model.program.BooleanExpression;
-import worms.model.program.Expression;
-import worms.model.program.VariableExpression;
+import worms.model.program.expressions.BooleanExpression;
+import worms.model.program.expressions.Expression;
+import worms.model.program.expressions.VariableExpression;
 
 /**
  * If statement (condition, then, else)
@@ -41,7 +42,7 @@ public class IfStatement extends ConditionalStatement implements MultipleStateme
      * @throws IllegalArgumentException
      *          When at least one of the statements or the condition is a null reference.
      */
-    public IfStatement(VariableExpression condition, Statement then, Statement otherwise) throws IllegalArgumentException {
+    public IfStatement(VariableExpression<?> condition, Statement then, Statement otherwise) throws IllegalArgumentException {
         if(then == null || otherwise == null || condition == null)
             throw new IllegalArgumentException("The if/else statements or the condition musn't be a null reference.");
         
@@ -54,7 +55,7 @@ public class IfStatement extends ConditionalStatement implements MultipleStateme
         this.otherwiseStatement = otherwise;
     }
     
-    private final Expression condition;
+    private final Expression<?> condition;
     private final Statement thenStatement;
     private final Statement otherwiseStatement;
 

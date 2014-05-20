@@ -2,10 +2,13 @@
 package worms.model.program;
 
 import static org.junit.Assert.*;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import worms.model.Facade;
 import worms.model.SimpleActionHandler;
+import worms.model.program.expressions.BooleanExpression;
 import worms.model.programs.ProgramParser;
 
 /**

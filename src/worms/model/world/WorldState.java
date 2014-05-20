@@ -1,5 +1,7 @@
 package worms.model.world;
 
+import be.kuleuven.cs.som.annotate.Value;
+
 /**
  * An enum to set the state of a world:
  * - INITIALISATION while adding worms, food and teams.
@@ -9,6 +11,7 @@ package worms.model.world;
  * @author Coosemans Brent
  * @author Derkinderen Vincent
  */
+@Value
 public enum WorldState {
 	INITIALISATION,
 	PLAYING,

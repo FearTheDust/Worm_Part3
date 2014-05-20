@@ -1,18 +1,14 @@
 package worms.model;
 
-import worms.model.Worm;
-import worms.model.Projectile;
-import worms.model.Food;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import worms.model.*;
-import worms.model.world.entity.*;
+import worms.model.world.WorldState;
+import worms.model.world.entity.GameObject;
 import worms.util.*;
 import be.kuleuven.cs.som.annotate.*;
-import worms.model.world.WorldState;
 
 /**
  * A two dimensional world with a certain height and width. The world may or may not contain any teams and GameObjects.
@@ -28,7 +24,7 @@ import worms.model.world.WorldState;
  * 
  * @invar The amount of teams in a world is less than or equal to 10.
  * 			| this.getTeamAmount() <= Constants.MAX_TEAM_AMOUNT
- * @invar	When there is an active worm it is either dead or its world is set to this world.
+ * @invar When there is an active worm it is either dead or its world is set to this world.
  * 			| this.getActiveWorm() == null || !this.getActiveWorm().isAlive() || this.getActiveWorm().getWorld() == this
  */
 public class World {
@@ -57,7 +53,7 @@ public class World {
 	 * 			When random or passableMap is a null reference
 	 * 			| random == null || passableMap == null
 	 * @throws IllegalArgumentException
-	 * 			When the 2 dimensional boolean array isn't 'rectangle shaped' aka when a row hasn't got the same length as another one.
+	 * 			When the 2 dimensional boolean array isn't 'rectangle shaped' a.k.a. when a row hasn't got the same length as another one.
 	 * 			| !isRectangleDimension(passableMap)
 	 */
 	@Raw
@@ -77,8 +73,8 @@ public class World {
 		//Cloned because we don't want anyone to modify our world while we're playing.
 		this.passableMap = getInvertedMap(Util.deepClone(passableMap));
 		this.random = random;
-		gameObjList = new ArrayList<GameObject>();
-		teamList = new ArrayList<Team>();
+		gameObjList = new ArrayList<>();
+		teamList = new ArrayList<>();
 	}
 	
 	/**
@@ -100,10 +96,11 @@ public class World {
 			return false;
 		
 		int width = matrix[0].length;
-		for(int row = 0; row < matrix.length; row++) {
-			if(width != matrix[row].length)
-				return false;
-		}
+            for (boolean[] matrix1 : matrix) {
+                if (width != matrix1.length) {
+                    return false;
+                }
+            }
 		return true;
 	}
 
@@ -205,7 +202,7 @@ public class World {
 	 * When there are no teams an empty List will be returned.
 	 */
 	public List<Team> getTeams() {
-		return new ArrayList<Team>(teamList);
+		return new ArrayList<>(teamList);
 	}
 
 	/**
@@ -951,8 +948,7 @@ public class World {
                     searchAngle += Math.PI;
                 }
             }
-            //TODO: Fuzzy Between?? (Brent)
-            if (Util.fuzzyEquals(searchAngle, angle, 1E-2) && gameObject instanceof Entity) {
+            if (Util.fuzzyBetween(searchAngle-(1E-2), searchAngle+(1E-2), angle) && gameObject instanceof Entity) {
                 double tempDistance = gameObject.getPosition().distance(position);
                 if (tempDistance < distance && tempDistance > 0) {
                     shortestObject = (Entity) gameObject;

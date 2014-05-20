@@ -1,8 +1,8 @@
 package worms.model.program.statements;
 
 import worms.model.Program;
-import worms.model.program.Expression;
 import worms.model.program.Variable;
+import worms.model.program.expressions.Expression;
 import worms.model.programs.ProgramParser;
 
 /**
@@ -16,15 +16,17 @@ import worms.model.programs.ProgramParser;
  */
 public class AssignmentStatement implements Statement {
 
-    public AssignmentStatement(ProgramParser parser, String variableName, Expression rhs) {
+	//TODO: Possibly generic??
+	
+    public AssignmentStatement(ProgramParser<Expression<?>, Statement, Variable<?>> parser, String variableName, Expression<?> rhs) {
         this.parser = parser;
         this.variableName = variableName;
         this.rhs = rhs;
     }
 
-    private final ProgramParser parser;
+    private final ProgramParser<Expression<?>, Statement, Variable<?>> parser;
     private final String variableName;
-    private final Expression rhs;
+    private final Expression<?> rhs;
     
     /**
      * The name of the variable used in this assignment (left hand side).

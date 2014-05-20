@@ -3,7 +3,7 @@ package worms.model.program.statements;
 
 import worms.gui.game.IActionHandler;
 import worms.model.Program;
-import worms.model.program.Expression;
+import worms.model.program.expressions.Expression;
 
 /**
  * Statement that prints out an expression.
@@ -18,16 +18,17 @@ public class PrintStatement implements Statement {
      * @param handler The ActionHandler to use for printing.
      * @param e The expression to print the result of.
      */
-    public PrintStatement(IActionHandler handler, Expression e) throws IllegalArgumentException {
+    public PrintStatement(IActionHandler handler, Expression<?> e) throws IllegalArgumentException {
         if(handler == null)
             throw new IllegalArgumentException("The handler can't be null.");
+        
         this.handler = handler;
         this.expression = e;
     }
     
     private final IActionHandler handler;
     
-    private final Expression expression;
+    private final Expression<?> expression;
     
     /**
      * Execute the printer.

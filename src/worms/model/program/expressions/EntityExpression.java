@@ -1,5 +1,5 @@
 
-package worms.model.program;
+package worms.model.program.expressions;
 
 import worms.model.Entity;
 

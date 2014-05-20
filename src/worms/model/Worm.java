@@ -1,15 +1,12 @@
 package worms.model;
 
-import worms.model.Food;
 import java.util.ArrayList;
 import java.util.List;
 
-import be.kuleuven.cs.som.annotate.*;
-import worms.model.*;
 import worms.model.equipment.weapons.*;
-import worms.model.world.entity.GameObject;
-import worms.model.world.entity.WeaponProjectile;
+import worms.model.world.entity.*;
 import worms.util.*;
+import be.kuleuven.cs.som.annotate.*;
 
 /**
  *
