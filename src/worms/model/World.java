@@ -576,6 +576,8 @@ public class World {
 	/**
 	 * Set the Projectile that is alive in this world to livingProjectile.
 	 * 
+         * @param livingProjectile The projectile that is the current active one.
+         * 
 	 * @post The living Projectile for the new world is equal to livingProjectile.
 	 * 			| new.getLivingProjectile() == livingProjectile
 	 */
@@ -714,7 +716,7 @@ public class World {
 	 * 			| return = result
 	 */
 	public ArrayList<Worm> hitsWorm(Position position, double radius) {
-		ArrayList<Worm> result = new ArrayList<Worm>();
+		ArrayList<Worm> result = new ArrayList<>();
 		for (Worm worm : this.getWorms()) {
 			double distance = worm.getPosition().distance(position);
 			if (distance < worm.getRadius() + radius)
