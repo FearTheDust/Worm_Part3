@@ -15,8 +15,6 @@ import worms.model.programs.ProgramParser;
  * @author Coosemans Brent
  */
 public class AssignmentStatement implements Statement {
-
-	//TODO: Possibly generic??
 	
     public AssignmentStatement(ProgramParser<Expression<?>, Statement, Variable<?>> parser, String variableName, Expression<?> rhs) {
         this.parser = parser;
