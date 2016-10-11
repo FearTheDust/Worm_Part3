@@ -130,6 +130,8 @@ public class Util {
 	 * Returns the relative error |expected - actual|/|expected|
 	 */
 	public static double relativeError(double expected, double actual) {
+		if(excpected == 0)
+			return Double.NaN;
 		return absoluteError(expected, actual) / Math.abs(expected);
 	}
 	
